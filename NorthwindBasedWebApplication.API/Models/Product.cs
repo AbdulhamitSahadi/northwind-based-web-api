@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using NorthwindBasedWebApplication.API.Models.Base;
 
 namespace NorthwindBasedWebApplication.API.Models
 {
-    public class Product
+    public class Product : BaseEntity
     {
         [Required(ErrorMessage = "Product name is required field!")]
         [Display(Name = "Product Name")]

@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NorthwindBasedWebApplication.API.Models.Base;
+using System.ComponentModel.DataAnnotations;
 
 namespace NorthwindBasedWebApplication.API.Models
 {
-    public class Shipper
+    public class Shipper : BaseEntity
     {
         [Required(ErrorMessage = "Company name is required field!")]
         [Display(Name = "Company Name")]
