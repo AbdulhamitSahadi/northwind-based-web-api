@@ -4,7 +4,7 @@ namespace NorthwindBasedWebApplication.API.Models
 {
     public class Shipper
     {
-        [Required(ErrorMessage = "Company name is required")]
+        [Required(ErrorMessage = "Company name is required field!")]
         [Display(Name = "Company Name")]
         public string CompanyName { get; set; }
 
@@ -13,6 +13,7 @@ namespace NorthwindBasedWebApplication.API.Models
         [Required(ErrorMessage = "Shipper phone is required field!")]
         [Display(Name = "Phone")]
         public string Phone { get; set; }
+
 
 
         [Display(Name = "Picture")]

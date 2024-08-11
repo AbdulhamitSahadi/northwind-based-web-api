@@ -11,13 +11,15 @@ namespace NorthwindBasedWebApplication.API.Models
         public string TerritoryDescription { get; set; }
 
 
+
         [Display(Name = "PictureUrl")]
         public string? PictureUrl { get; set; }
 
 
 
         //Navigations
-        public ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
+        public ICollection<EmployeeTerritory> EmployeeTerritory { get; set; }
+
 
 
         [Required]

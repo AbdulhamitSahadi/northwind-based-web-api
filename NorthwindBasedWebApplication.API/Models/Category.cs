@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NorthwindBasedWebApplication.API.Models.Base;
+using System.ComponentModel.DataAnnotations;
 
 namespace NorthwindBasedWebApplication.API.Models
 {
-    public class Category
+    public class Category : BaseEntity
     {
         [Display(Name = "Category Name")]
-        [Required(ErrorMessage = "Category name is required!")]
+        [Required(ErrorMessage = "Category name is required field!")]
         public string CategoryName { get; set; }
 
 

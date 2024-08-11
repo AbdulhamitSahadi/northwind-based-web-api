@@ -10,8 +10,10 @@ namespace NorthwindBasedWebApplication.API.Models
         public string RegionDescription { get; set; }
 
 
+
         [Display(Name = "Picture")]
         public string? PictureUrl { get; set; }
+
 
 
         //Navigation Properties

@@ -6,10 +6,10 @@ namespace NorthwindBasedWebApplication.API.Models
     public class CustomerCustomerDemographic : BaseEntity
     {
         //Navigation Properties
-
         [ForeignKey("Customer")]
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
+
 
 
         [ForeignKey("CustomerType")]

@@ -5,7 +5,7 @@ namespace NorthwindBasedWebApplication.API.Models
 {
     public class Supplier : BaseEntity
     {
-        [Required(ErrorMessage = "Company name is required")]
+        [Required(ErrorMessage = "Company name is required field!")]
         [Display(Name = "Company Name")]
         public string CompanyName { get; set; }
 
@@ -39,6 +39,7 @@ namespace NorthwindBasedWebApplication.API.Models
         public string? Region { get; set; }
 
 
+
         [Required(ErrorMessage = "Postal code is required field!")]
         [Display(Name = "Postal Code")]
         public string PostalCode { get; set; }
@@ -61,16 +62,18 @@ namespace NorthwindBasedWebApplication.API.Models
         public string? Fax { get; set; }
 
 
+
         [Display(Name = "Home Page")]
         public string? HomePage { get; set; }
+
 
 
         [Display(Name = "Picture")]
         public string? PictureUrl { get; set; }
 
 
-        //Navigation Properties
 
+        //Navigation Properties
         public ICollection<Product> Products { get; set; }
     }
 }

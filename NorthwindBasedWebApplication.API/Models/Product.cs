@@ -11,7 +11,6 @@ namespace NorthwindBasedWebApplication.API.Models
 
 
 
-        [Column(TypeName = "nvarchar(20)")]
         [Required(ErrorMessage = "Quantity per unit is required field!")]
         [Display(Name = "Quantity Per Unit")]
         public string QuantityPerUnit { get; set; }
@@ -47,6 +46,7 @@ namespace NorthwindBasedWebApplication.API.Models
         public bool Discontinued { get; set; }
 
 
+
         [Display(Name = "Picture")]
         public string? PictureUrl { get; set; }
 
@@ -60,11 +60,13 @@ namespace NorthwindBasedWebApplication.API.Models
         public Category Category { get; set; }
 
 
+
         [Display(Name = "Supplier Id")]
         [ForeignKey("Supplier")]
         [Required(ErrorMessage = "Supplier Id is required field!")]
         public int SupplierId { get; set; }
         public Supplier Supplier { get; set; }
+
 
 
         public ICollection<OrderDetails> OrderDetails { get; set; }

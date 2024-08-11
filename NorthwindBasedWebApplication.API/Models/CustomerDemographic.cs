@@ -9,12 +9,14 @@ namespace NorthwindBasedWebApplication.API.Models
         [Display(Name = "Customer Description")]
         public string? CustomerDescription { get; set; }
 
+
+
         [Display(Name = "Picture")]
         public string? PictureUrl { get; set; }
 
 
 
         //Navigation properties
-        public ICollection<CustomerCustomerDemographic> CustomersCustomerDemographics { get; set; }
+        public ICollection<CustomerCustomerDemographic> CustomerCustomerDemographic { get; set; }
     }
 }

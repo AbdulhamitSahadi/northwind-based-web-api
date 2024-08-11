@@ -6,10 +6,10 @@ namespace NorthwindBasedWebApplication.API.Models
     public class EmployeeTerritory : BaseEntity
     {
         //Navigation Properties
-
         [ForeignKey("Employee")]
         public int EmployeeId { get; set; }
         public Employee Employee { get; set; }
+
 
 
         [ForeignKey("Territory")]

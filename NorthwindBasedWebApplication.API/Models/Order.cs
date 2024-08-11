@@ -51,6 +51,7 @@ namespace NorthwindBasedWebApplication.API.Models
         public string? ShipRegion { get; set; }
 
 
+
         [Display(Name = "Ship Postal Code")]
         public string? ShipPostalCode { get; set; }
 
@@ -59,6 +60,7 @@ namespace NorthwindBasedWebApplication.API.Models
         [Required(ErrorMessage = "Ship country is required field!")]
         [Display(Name = "Ship Country")]
         public string ShipCountry { get; set; }
+
 
 
         [Display(Name = "Picture")]
@@ -74,6 +76,7 @@ namespace NorthwindBasedWebApplication.API.Models
         public Employee Employee { get; set; }
 
 
+
         [Required(ErrorMessage = "Ship Via is required field!")]
         [Display(Name = "Ship Via")]
         [ForeignKey("Shipper")]
@@ -81,11 +84,13 @@ namespace NorthwindBasedWebApplication.API.Models
         public Shipper Shipper { get; set; }
 
 
+
         [Required(ErrorMessage = "Customer Id is required field!")]
         [Display(Name = "Customer Id")]
         [ForeignKey("Customer")]
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
+
 
 
         public ICollection<OrderDetails> OrderDetails { get; set; }

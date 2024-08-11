@@ -74,7 +74,7 @@ namespace NorthwindBasedWebApplication.API.Models
 
 
         //Navigation properties
-        public ICollection<CustomerCustomerDemo> CustomersCustomerDemos { get; set; }
+        public ICollection<CustomerCustomerDemographic> CustomerCustomerDemographic { get; set; }
         public ICollection<Order> Orders { get; set; }
 
     }

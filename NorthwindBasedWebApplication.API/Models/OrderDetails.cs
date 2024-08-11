@@ -13,7 +13,7 @@ namespace NorthwindBasedWebApplication.API.Models
 
 
         [Display(Name = "Quantity")]
-        [Required(ErrorMessage = "Quantity is required field")]
+        [Required(ErrorMessage = "Quantity is required field!")]
         public short Quantity { get; set; }
 
 
@@ -21,6 +21,7 @@ namespace NorthwindBasedWebApplication.API.Models
         [Display(Name = "Discount")]
         [Required(ErrorMessage = "Discount is required field!")]
         public float Discount { get; set; }
+
 
 
         //Navigation Properties 
@@ -31,6 +32,7 @@ namespace NorthwindBasedWebApplication.API.Models
         public Order Order { get; set; }
 
 
+
         [Display(Name = "Product Id")]
         [Required(ErrorMessage = "Product Id is required field!")]
         [ForeignKey("Product")]
@@ -39,6 +41,7 @@ namespace NorthwindBasedWebApplication.API.Models
 
 
 
+        [Display(Name = "Picture")]
         public string? PictureUrl { get; set; }
     }
 }
