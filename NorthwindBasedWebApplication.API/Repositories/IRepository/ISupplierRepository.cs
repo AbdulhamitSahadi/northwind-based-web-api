@@ -5,5 +5,6 @@ namespace NorthwindBasedWebApplication.API.Repositories.IRepository
 {
     public interface ISupplierRepository : IEntityBaseRepository<Supplier>
     {
+        Task<ICollection<Product>> GetProductsBySupplier(int id);
     }
 }
