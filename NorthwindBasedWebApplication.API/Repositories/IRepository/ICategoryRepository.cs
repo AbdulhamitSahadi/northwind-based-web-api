@@ -5,5 +5,6 @@ namespace NorthwindBasedWebApplication.API.Repositories.IRepository
 {
     public interface ICategoryRepository : IEntityBaseRepository<Category>
     {
+        Task<ICollection<Product>> GetProductsByCategory(int id);
     }
 }
