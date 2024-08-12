@@ -20,6 +20,7 @@ namespace NorthwindBasedWebApplication.API.Repositories.Repository
             var customerDemographic = await _context.CustomersCustomerDemographics
                 .Where(i => i.CustomerId == id)
                 .Select(c => c.CustomerType)
+                .OrderBy(i => i.Id)
                 .ToListAsync();
 
             return customerDemographic;
@@ -29,6 +30,7 @@ namespace NorthwindBasedWebApplication.API.Repositories.Repository
         {
             var orders = await _context.Orders
                 .Where(i => i.CustomerId == id)
+                .OrderBy(i => i.Id)
                 .ToListAsync();
 
             return orders;
