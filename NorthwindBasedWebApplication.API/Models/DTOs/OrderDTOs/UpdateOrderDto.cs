@@ -86,25 +86,5 @@ namespace NorthwindBasedWebApplication.API.Models.DTOs.OrderDTOs
 
 
 
-        //Navigation Properties
-        [Required(ErrorMessage = "Employee Id is required field!")]
-        [Display(Name = "Employee Id")]
-        [ForeignKey("Employee")]
-        public int EmployeeId { get; set; }
-
-
-
-
-        [Required(ErrorMessage = "Ship Via is required field!")]
-        [Display(Name = "Ship Via")]
-        [ForeignKey("Shipper")]
-        public int ShipVia { get; set; }
-
-
-
-
-        [Required(ErrorMessage = "Customer Id is required field!")]
-        [Display(Name = "Customer Id")]
-        public int CustomerId { get; set; }
     }
 }

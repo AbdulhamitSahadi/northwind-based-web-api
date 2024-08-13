@@ -79,24 +79,5 @@ namespace NorthwindBasedWebApplication.API.Models.DTOs.OrderDTOs
         public string? PictureUrl { get; set; }
 
 
-
-
-        [Required(ErrorMessage = "Employee Id is required field!")]
-        [Display(Name = "Employee Id")]
-        public int EmployeeId { get; set; }
-
-
-
-
-        [Required(ErrorMessage = "Ship Via is required field!")]
-        [Display(Name = "Ship Via")]
-        public int ShipVia { get; set; }
-
-
-
-
-        [Required(ErrorMessage = "Customer Id is required field!")]
-        [Display(Name = "Customer Id")]
-        public int CustomerId { get; set; }
     }
 }
