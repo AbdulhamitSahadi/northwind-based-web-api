@@ -60,14 +60,5 @@ namespace NorthwindBasedWebApplication.API.Models.DTOs.ProductDTOs
 
 
 
-        //Navigation properties
-        [Required(ErrorMessage = "Category Id is required field!")]
-        [Display(Name = "Category Id")]
-        public int CategoryId { get; set; }
-
-
-        [Display(Name = "Supplier Id")]
-        [Required(ErrorMessage = "Supplier Id is required field!")]
-        public int SupplierId { get; set; }
     }
 }
