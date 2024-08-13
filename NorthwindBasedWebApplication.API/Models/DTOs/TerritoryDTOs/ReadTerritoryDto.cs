@@ -19,5 +19,10 @@ namespace NorthwindBasedWebApplication.API.Models.DTOs.TerritoryDTOs
         [Display(Name = "Picture")]
         public string? PictureUrl { get; set; }
 
+
+        [Display(Name = "Rojin")]
+        public int RegionId { get; set; }
+
+
     }
 }

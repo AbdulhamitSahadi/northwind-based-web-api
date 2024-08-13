@@ -17,10 +17,7 @@ namespace NorthwindBasedWebApplication.API.Models.DTOs.TerritoryDTOs
 
 
 
-        [Required(ErrorMessage = "Region is required field!")]
-        [Display(Name = "Region")]
-
-        public int RegionId { get; set; }
+    
 
     }
 }
