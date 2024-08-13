@@ -93,8 +93,5 @@ namespace NorthwindBasedWebApplication.API.Models.DTOs.EmployeeDTOs
         public string? Notes { get; set; }
 
 
-        [Display(Name = "Reports To")]
-        public int? ReportsTo { get; set; }
-
     }
 }
