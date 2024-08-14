@@ -161,10 +161,10 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var customerResponse = _mapper.Map<ReadCustomerDto>(createdCustomer);
+
 
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = customerResponse;
+
             _response.IsSuccess = true;
 
 
@@ -248,10 +248,10 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var customerResponse = _mapper.Map<ReadCustomerDto>(updatedCustomer);
+  
 
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = customerResponse;
+
             _response.IsSuccess = true;
 
 
@@ -322,9 +322,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            _response.StatusCode = HttpStatusCode.BadRequest;
-            _response.ErrorMessages.Add("The customer deleted successfully!");
-            _response.IsSuccess = false;
+            _response.StatusCode = HttpStatusCode.OK;
+
+            _response.IsSuccess = true;
 
 
             return Ok(_response);
@@ -363,6 +363,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if(customerDemographics == null)
             {
                 _response.ErrorMessages.Add("Something went wrong while getting customer demographics");
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.NotFound;
+
+                return NotFound(_response);
+            }
+
+
+            if(customerDemographics.Count() == 0)
+            {
+                _response.ErrorMessages.Add("No record was found!");
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.NotFound;
 
