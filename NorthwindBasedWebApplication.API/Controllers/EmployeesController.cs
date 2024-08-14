@@ -65,7 +65,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Details(int id)
+        public async Task<ActionResult<ApiResponse>> GetEmployee(int id)
         {
 
             if (!ModelState.IsValid)
@@ -112,7 +112,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create(CreateEmployeeDto createEmployeeDto)
+        public async Task<ActionResult<ApiResponse>> Create([FromQuery] int? reportsTo,
+            [FromBody] CreateEmployeeDto createEmployeeDto)
         {
 
             if (!ModelState.IsValid)
@@ -147,6 +148,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             var employeeModel = _mapper.Map<Employee>(createEmployeeDto);
 
+            employeeModel.ReportsTo = reportsTo;
+
 
             var createdEmployee = await _employeeRepository.CreateAsync(employeeModel);
 
@@ -161,12 +164,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var employeeResponse = _mapper.Map<ReadEmployeeDto>(createdEmployee);
-
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = employeeResponse;
             _response.IsSuccess = true;
-
 
             return Ok(_response);
         }
@@ -174,7 +173,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Update(int id, UpdateEmployeeDto updateEmployeeDto)
+        public async Task<ActionResult<ApiResponse>> Update(int id, [FromQuery] int? reportsTo,
+            [FromBody]UpdateEmployeeDto updateEmployeeDto)
         {
             if (!ModelState.IsValid)
             {
@@ -233,6 +233,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             var employeeModel = _mapper.Map<Employee>(updateEmployeeDto);
 
+            employeeModel.ReportsTo = reportsTo;
 
             var updatedEmployee = await _employeeRepository.UpdateAsync(employeeModel);
 
@@ -247,11 +248,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-
-            var employeeResponse = _mapper.Map<ReadEmployeeDto>(updateEmployeeDto);
-
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = employeeResponse;
             _response.IsSuccess = true;
 
 
@@ -324,11 +321,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var employeeResponse = _mapper.Map<ReadEmployeeDto>(deletedEmployee);
-
-            _response.StatusCode = HttpStatusCode.BadRequest;
-            _response.ErrorMessages.Add("The employee deleted successfully!");
-            _response.data = employeeResponse;
+            _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
 
 
