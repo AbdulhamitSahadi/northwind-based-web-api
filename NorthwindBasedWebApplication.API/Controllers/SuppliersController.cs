@@ -118,7 +118,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create(CreateSupplierDto model)
+        public async Task<ActionResult<ApiResponse>> Create([FromBody]CreateSupplierDto model)
         {
 
             if (!ModelState.IsValid)
@@ -169,10 +169,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var supplierResponse = _mapper.Map<ReadSupplierDto>(createdSupplier);
-
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = supplierResponse;
             _response.IsSuccess = true;
 
 
@@ -182,7 +179,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Update(int id, UpdateSupplierDto updateSupplierDto)
+        public async Task<ActionResult<ApiResponse>> Update(int id, 
+            [FromBody]UpdateSupplierDto updateSupplierDto)
         {
             if (!ModelState.IsValid)
             {
@@ -229,6 +227,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
+            
+
             if (!await _supplierRepository.IsExistAsync(i => i.Id == id, tracked: false))
             {
                 _response.StatusCode = HttpStatusCode.NotFound;
@@ -255,10 +255,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var supplierResponse = _mapper.Map<ReadSupplierDto>(updatedSupplier);
-
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = supplierResponse;
             _response.IsSuccess = true;
 
 
@@ -329,12 +326,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var supplierResponse = _mapper.Map<ReadSupplierDto>(deletedSupplier);
 
-            _response.StatusCode = HttpStatusCode.BadRequest;
-            _response.ErrorMessages.Add("The region deleted successfully!");
-            _response.data = supplierResponse;
-            _response.IsSuccess = false;
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
 
 
             return Ok(_response);
@@ -376,18 +370,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             if(products == null || products.Count <= 0)
             {
-                _response.ErrorMessages.Add("Someting went wrong while getting the products of supplier");
+                _response.ErrorMessages.Add("Something went wrong while getting the products of supplier");
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.InternalServerError;
 
                 return BadRequest(_response);
             }
 
-            var productsResponse = _mapper.Map<List<ReadProductDto>>(products);
-
-            _response.data = productsResponse;
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
+            _response.data = _mapper.Map<List<ReadProductDto>>(products);
 
             return Ok(_response);
         }
