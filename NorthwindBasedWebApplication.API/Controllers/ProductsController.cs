@@ -119,7 +119,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create(CreateProductDto createProductDto)
+        public async Task<ActionResult<ApiResponse>> Create([FromQuery]int categoryId,
+            [FromQuery]int supplierId, [FromBody]CreateProductDto createProductDto)
         {
 
             if (!ModelState.IsValid)
@@ -154,6 +155,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             var productModel = _mapper.Map<Product>(createProductDto);
 
+            productModel.CategoryId = categoryId;
+            productModel.SupplierId = supplierId;
+
 
             var createdProduct = await _productRepository.CreateAsync(productModel);
 
@@ -168,11 +172,11 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var productResponse = _mapper.Map<ReadProductDto>(createdProduct);
+
 
             _response.StatusCode = HttpStatusCode.OK;
-            _response.ErrorMessages.Add(string.Empty);
-            _response.data = productResponse;
+
+
             _response.IsSuccess = true;
 
 
@@ -182,7 +186,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Update(int id, UpdateProductDto updateProductDto)
+        public async Task<ActionResult<ApiResponse>> Update(int id, 
+            [FromQuery]int categoryId, [FromQuery] int supplierId, UpdateProductDto updateProductDto)
         {
             if (!ModelState.IsValid)
             {
@@ -241,6 +246,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             var productModel = _mapper.Map<Product>(updateProductDto);
 
+            productModel.SupplierId = supplierId;
+            productModel.CategoryId = categoryId;
+
 
             var updatedProduct = await _productRepository.UpdateAsync(productModel);
 
@@ -255,11 +263,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var productResponse = _mapper.Map<ReadProductDto>(productModel);
-
             _response.StatusCode = HttpStatusCode.OK;
-            _response.ErrorMessages.Add(string.Empty);
-            _response.data = productResponse;
             _response.IsSuccess = true;
 
 
@@ -330,12 +334,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var productResponse = _mapper.Map<ReadProductDto>(deletedProduct);
 
-            _response.StatusCode = HttpStatusCode.BadRequest;
-            _response.ErrorMessages.Add("The product deleted successfully!");
-            _response.data = productResponse;
-            _response.IsSuccess = false;
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
 
 
             return Ok(_response);
@@ -364,7 +365,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return NotFound(_response);
             }
 
-            var category = _productRepository.GetSupplierByProductAsync(id);
+            var category = await _productRepository.GetCategoryByProductAsync(id);
 
             if(category == null)
             {
@@ -407,7 +408,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return NotFound(_response);
             }
 
-            var supplier = _productRepository.GetSupplierByProductAsync(id);
+            var supplier = await _productRepository.GetSupplierByProductAsync(id);
 
             if(supplier == null)
             {
