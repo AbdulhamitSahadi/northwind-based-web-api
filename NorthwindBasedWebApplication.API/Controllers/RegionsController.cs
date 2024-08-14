@@ -118,7 +118,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create(CreateRegionDto model)
+        public async Task<ActionResult<ApiResponse>> Create([FromBody]CreateRegionDto model)
         {
 
             if (!ModelState.IsValid)
@@ -165,12 +165,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
                 return BadRequest(_response);
-            }
-
-            var regionResponse = _mapper.Map<ReadRegionDto>(createdRegion);   
+            } 
 
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = regionResponse;
             _response.IsSuccess = true;
 
 
@@ -180,7 +177,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Update(int id, UpdateRegionDto updateRegiondto)
+        public async Task<ActionResult<ApiResponse>> Update(int id, 
+            [FromBody]UpdateRegionDto updateRegionDto)
         {
             if (!ModelState.IsValid)
             {
@@ -192,7 +190,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            if (id <= 0 || updateRegiondto.Id <= 0)
+            if (id <= 0 || updateRegionDto.Id <= 0)
             {
 
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -204,7 +202,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             }
 
-            if (id != updateRegiondto.Id)
+            if (id != updateRegionDto.Id)
             {
 
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -216,7 +214,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
             }
 
 
-            if (updateRegiondto == null)
+            if (updateRegionDto == null)
             {
 
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -237,7 +235,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var regionModel = _mapper.Map<Region>(updateRegiondto);
+            var regionModel = _mapper.Map<Region>(updateRegionDto);
 
 
             var updatedRegion = await _regionRepository.UpdateAsync(regionModel);
@@ -251,13 +249,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
                 return BadRequest(_response);
-            }
-
-            var regionResponse = _mapper.Map<ReadRegionDto>(updatedRegion);    
+            }  
 
             _response.StatusCode = HttpStatusCode.OK;
-            _response.ErrorMessages.Add(string.Empty);
-            _response.data = regionResponse;
             _response.IsSuccess = true;
 
 
@@ -330,12 +324,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var regionResponse = _mapper.Map<ReadRegionDto>(deletedRegion);
 
-            _response.StatusCode = HttpStatusCode.BadRequest;
-            _response.ErrorMessages.Add("The region deleted successfully!");
-            _response.data = regionResponse;
-            _response.IsSuccess = false;
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
 
 
             return Ok(_response);
