@@ -118,7 +118,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create(CreateShipperDto createShipperDto)
+        public async Task<ActionResult<ApiResponse>> Create([FromBody]CreateShipperDto createShipperDto)
         {
 
             if (!ModelState.IsValid)
@@ -167,10 +167,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var shipperResponse = _mapper.Map<ReadShipperDto>(createdShipper);
 
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = shipperResponse;
             _response.IsSuccess = true;
 
 
@@ -180,7 +178,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Update(int id, UpdateShipperDto updateShipperDto)
+        public async Task<ActionResult<ApiResponse>> Update(int id, 
+            [FromBody]UpdateShipperDto updateShipperDto)
         {
             if (!ModelState.IsValid)
             {
@@ -253,11 +252,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var shipperResponse = _mapper.Map<ReadShipperDto>(shipperModel);
-
             _response.StatusCode = HttpStatusCode.OK;
-            _response.ErrorMessages.Add(string.Empty);
-            _response.data = shipperResponse;
             _response.IsSuccess = true;
 
 
@@ -328,11 +323,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var shipperResponse = _mapper.Map<ReadShipperDto>(deletedShipper);
-
             _response.StatusCode = HttpStatusCode.BadRequest;
-            _response.ErrorMessages.Add("The region deleted successfully!");
-            _response.data = shipperResponse;
             _response.IsSuccess = false;
 
 
