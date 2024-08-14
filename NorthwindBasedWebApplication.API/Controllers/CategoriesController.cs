@@ -168,12 +168,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var categoryResponse = _mapper.Map<ReadCategoryDto>(createdCategory);
-
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = categoryResponse;
-
 
             return Ok(_response);
         }
@@ -255,8 +251,6 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
             _response.StatusCode = HttpStatusCode.OK;
-            _response.ErrorMessages.Add(string.Empty);
-            _response.data = _mapper.Map<ReadCategoryDto>(_mapper.Map<Category>(updateCategoryDto));
             _response.IsSuccess = true;
 
 
@@ -327,15 +321,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var categoryResponse = _mapper.Map<ReadCategoryDto>(deletedCategory);
-
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = categoryResponse;
 
 
             return Ok(_response);
         }
+
 
 
         [HttpGet]
