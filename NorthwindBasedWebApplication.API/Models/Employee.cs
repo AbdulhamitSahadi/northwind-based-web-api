@@ -104,7 +104,7 @@ namespace NorthwindBasedWebApplication.API.Models
         public ICollection<EmployeeTerritory> EmployeeTerritory { get; set; }
 
 
-
+        
         public ICollection<Order> Orders { get; set; }
     }
 }
