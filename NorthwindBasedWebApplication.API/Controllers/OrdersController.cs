@@ -119,7 +119,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create(CreateOrderDto createOrderDto)
+        public async Task<ActionResult<ApiResponse>> Create([FromQuery]int employeeId,
+            [FromQuery]int shipVia, [FromQuery]int customerId, 
+            [FromBody]CreateOrderDto createOrderDto)
         {
 
             if (!ModelState.IsValid)
@@ -145,6 +147,10 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             var orderModel = _mapper.Map<Order>(createOrderDto);
 
+            orderModel.EmployeeId = employeeId;
+            orderModel.ShipVia = shipVia;
+            orderModel.CustomerId = customerId;
+
 
             var createdOrder = await _orderRepository.CreateAsync(orderModel);
 
@@ -159,10 +165,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var orderResponse = _mapper.Map<ReadOrderDto>(createdOrder);
 
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = orderResponse;
             _response.IsSuccess = true;
 
 
@@ -172,7 +176,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Update(int id, UpdateOrderDto updateOrderDto)
+        public async Task<ActionResult<ApiResponse>> Update(int id,
+            [FromQuery]int employeeId, [FromQuery]int shipVia,
+            [FromQuery]int customerId, [FromBody]UpdateOrderDto updateOrderDto)
         {
             if (!ModelState.IsValid)
             {
@@ -231,6 +237,10 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             var orderModel = _mapper.Map<Order>(updateOrderDto);
 
+            orderModel.EmployeeId = employeeId;
+            orderModel.ShipVia = shipVia;
+            orderModel.CustomerId = customerId;
+
 
             var updatedOrder = await _orderRepository.UpdateAsync(orderModel);
 
@@ -245,11 +255,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var orderResponse = _mapper.Map<ReadOrderDto>(updatedOrder);
-
             _response.StatusCode = HttpStatusCode.OK;
-            _response.ErrorMessages.Add(string.Empty);
-            _response.data = orderResponse;
             _response.IsSuccess = true;
 
 
@@ -320,11 +326,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var orderResponse = _mapper.Map<ReadOrderDto>(deletedOrder);
-
-            _response.StatusCode = HttpStatusCode.BadRequest;
-            _response.ErrorMessages.Add("The order deleted successfully!");
-            _response.data = orderResponse;
+            _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = false;
 
 
