@@ -168,11 +168,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var customerDemographicResponse = _mapper.Map<ReadCustomerDemographicDto>(createdCustomerDemographic);  
-
-            _response.StatusCode = HttpStatusCode.OK;
-            _response.data = customerDemographicResponse;
             _response.IsSuccess = true;
+            _response.StatusCode = HttpStatusCode.OK;
+            
 
 
             return Ok(_response);
@@ -255,11 +253,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
             }
 
 
-            var customerDemographicResponse = _mapper.Map<ReadCustomerDemographicDto>(updatedCustomerDemographic);
-
-
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = customerDemographicResponse;
             _response.IsSuccess = true;
 
 
@@ -330,11 +324,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var customerDemographicResponse = _mapper.Map<ReadCustomerDemographicDto>(deletedCustomerDemographic);
-
-            _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
-            _response.data = customerDemographicResponse;
+            _response.StatusCode = HttpStatusCode.OK;
+            
 
             return Ok(_response);
         }
@@ -373,8 +365,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             var customers = await _customerDemographicRepository.GetCustomersByCustomerDemographicAsync(id);
 
+            if(customers.Count() == 0)
+            {
+                _response.StatusCode = HttpStatusCode.NotFound;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("No Record found!");
 
-            if(customers == null || customers.Count == 0)
+                return BadRequest(_response);
+            }
+
+            if(customers == null)
             {
                 _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
