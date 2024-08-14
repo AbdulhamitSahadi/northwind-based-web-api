@@ -90,7 +90,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            if (!await _territoryRepository.IsExistAsync(i => i.Id == id, tracked:false))
+            if (!await _territoryRepository.IsExistAsync(i => i.Id == id, tracked: false))
             {
                 _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("No shipper found with given id!");
@@ -122,7 +122,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create(CreateTerritoryDto createTerritoryDto)
+        public async Task<ActionResult<ApiResponse>> Create(
+            [FromQuery] int regionId, [FromBody] CreateTerritoryDto createTerritoryDto)
         {
 
             if (!ModelState.IsValid)
@@ -157,6 +158,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             var territoryModel = _mapper.Map<Territory>(createTerritoryDto);
 
+            territoryModel.RegionId = regionId;
+
 
             var createdTerritory = await _territoryRepository.CreateAsync(territoryModel);
 
@@ -171,10 +174,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var territoryResponse = _mapper.Map<ReadTerritoryDto>(createdTerritory);
-
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = territoryResponse;
             _response.IsSuccess = true;
 
 
@@ -184,7 +184,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Update(int id, UpdateTerritoryDto updateTerritoryDto)
+        public async Task<ActionResult<ApiResponse>> Update(int id,
+            [FromQuery] int regionId, [FromBody] UpdateTerritoryDto updateTerritoryDto)
         {
             if (!ModelState.IsValid)
             {
@@ -244,6 +245,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             var territoryModel = _mapper.Map<Territory>(updateTerritoryDto);
 
+            territoryModel.RegionId = regionId;
+
 
             var updatedTerritory = await _territoryRepository.UpdateAsync(territoryModel);
 
@@ -259,10 +262,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
             
-            var territoryResponse = _mapper.Map<ReadTerritoryDto>(updateTerritoryDto);
 
             _response.StatusCode = HttpStatusCode.OK;
-            _response.data = territoryResponse;
             _response.IsSuccess = true;
 
 
@@ -333,12 +334,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            var territoryResponse = _mapper.Map<ReadTerritoryDto>(deletedTerritory);
 
-            _response.StatusCode = HttpStatusCode.BadRequest;
-            _response.ErrorMessages.Add("The region deleted successfully!");
-            _response.data = territoryResponse;
-            _response.IsSuccess = false;
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
 
 
             return Ok(_response);
