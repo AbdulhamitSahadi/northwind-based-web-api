@@ -7,6 +7,7 @@ using NorthwindBasedWebApplication.API.Repositories.IRepository;
 using System.Net;
 using NorthwindBasedWebApplication.API.Models.DTOs.CustomerDemographicDTOs;
 using NorthwindBasedWebApplication.API.Models.DTOs.OrderDTOs;
+using Microsoft.IdentityModel.Tokens;
 
 namespace NorthwindBasedWebApplication.API.Controllers
 {
@@ -19,6 +20,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private ApiResponse _response;
         private readonly IMapper _mapper;
         private readonly ILogger<CustomersController> _logger;
+        private readonly LoggingModelBuilder _loggingModelBuilder;
 
         public CustomersController(ICustomerRepository customerRepository, IMapper mapper,
             ILogger<CustomersController> logger)
@@ -27,6 +29,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response = new();
             _mapper = mapper;
             _logger = logger;
+            _loggingModelBuilder = new();
         }
 
 
@@ -42,16 +45,52 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{GetCustomers}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("GET")
+                        .SetErrorMessage("The model state is invalid!")
+                        .Build();
+
+
                 return BadRequest(_response);
             }
 
             var customers = await _customerRepository.GetAllAsync(tracked: false);
 
-            if (customers == null)
+            if(customers.Count == 0)
             {
                 _response.StatusCode = HttpStatusCode.NotFound;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add("No customers found in database!");
+                _response.ErrorMessages.Add("No record of customer found!");
+
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{GetCustomers}")
+                        .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                        .SetMethodType("GET")
+                        .SetErrorMessage("No record of customer found!")
+                        .Build();
+
+                return BadRequest(_response);
+            }
+
+            if (customers == null)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Something went wrong while getting the customers!");
+
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{GetCustomers}")
+                        .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                        .SetMethodType("GET")
+                        .SetErrorMessage("Something went wrong while getting the customers!")
+                        .Build();
 
                 return BadRequest(_response);
             }
@@ -62,13 +101,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.StatusCode = HttpStatusCode.OK;
             _response.data = customersResponse;
 
+            _loggingModelBuilder
+                    .SetSuccess()
+                    .SetDetails($"{nameof(CustomersController)}/{GetCustomers}")
+                    .SetStatusCode(HttpStatusCode.OK.ToString())
+                    .SetMethodType("GET")
+                    .Build();
+
+
             return Ok(_response);
         }
 
 
         [HttpGet]
         [Route("{id:int}")]
-        public async Task<ActionResult<ApiResponse>> Get(int id)
+        public async Task<ActionResult<ApiResponse>> GetCustomer(int id)
         {
 
             if (!ModelState.IsValid)
@@ -76,6 +123,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{GetCustomer}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("GET")
+                        .SetErrorMessage("The model state is invalid!")
+                        .Build();
+
+                return BadRequest(_response);
             }
 
             if (id <= 0)
@@ -83,6 +141,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The given id is invalid");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{GetCustomers}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("GET")
+                        .SetErrorMessage("The given id is invalid!")
+                        .Build();
+
+                return BadRequest(_response);
             }
 
             if (!await _customerRepository.IsExistAsync(i => i.Id == id))
@@ -90,15 +159,37 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("No customer found with given id!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{GetCustomers}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("GET")
+                        .SetErrorMessage("No customer found with given id!")
+                        .Build();
+
+                return BadRequest(_response);
             }
 
             var customer = await _customerRepository.GetAsync(i => i.Id == id, tracked: false);
 
+
+
             if (customer == null)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("En error exists while getting the customer!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while getting the customer with given id!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{GetCustomers}")
+                        .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                        .SetMethodType("GET")
+                        .SetErrorMessage("Something went wrong while getting the customer with given id!")
+                        .Build();
             }
 
             var customerResponse = _mapper.Map<ReadCustomerDto>(customer);
@@ -107,6 +198,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.data = customerResponse;
             _response.IsSuccess = true;
 
+            _loggingModelBuilder
+                        .SetSuccess()
+                        .SetDetails($"{nameof(CustomersController)}/{GetCustomers}")
+                        .SetStatusCode(HttpStatusCode.OK.ToString())
+                        .SetMethodType("GET")
+                        .Build();
+
             return Ok(_response);
         }
 
@@ -114,7 +212,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create(CreateCustomerDto createCustomerDto)
+        public async Task<ActionResult<ApiResponse>> CreateCustomer(CreateCustomerDto createCustomerDto)
         {
 
             if (!ModelState.IsValid)
@@ -124,14 +222,31 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
 
 
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{CreateCustomer}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("POST")
+                        .SetErrorMessage("The model state is invalid!")
+                        .Build();
+
                 return BadRequest(_response);
             }
 
             if (createCustomerDto == null)
             {
-                _response.StatusCode = HttpStatusCode.NotFound;
+                _response.StatusCode = HttpStatusCode.NoContent;
                 _response.ErrorMessages.Add("The content that send by user is empty!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{CreateCustomer}")
+                        .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                        .SetMethodType("POST")
+                        .SetErrorMessage("The content that send by user is empty!")
+                        .Build();
 
 
                 return BadRequest(_response);
@@ -142,6 +257,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The customer's contact name is exists, please choose another!");
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{CreateCustomer}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("POST")
+                        .SetErrorMessage("The customer's contact name is exists, please choose another!")
+                        .Build();
 
 
                 return BadRequest(_response);
@@ -155,11 +278,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             if (!createdCustomer)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("An error exists while creating the customer!");
-                _response.data = null;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while getting the customer record");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{CreateCustomer}")
+                        .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                        .SetMethodType("POST")
+                        .SetErrorMessage("Something went wrong while getting the customer record!")
+                        .Build();
 
                 return BadRequest(_response);
             }
@@ -171,19 +301,35 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
 
 
+            _loggingModelBuilder
+                        .SetSuccess()
+                        .SetDetails($"{nameof(CustomersController)}/{CreateCustomer}")
+                        .SetStatusCode(HttpStatusCode.OK.ToString())
+                        .SetMethodType("POST")
+                        .Build();
+
+
             return Ok(_response);
         }
 
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Update(int id, UpdateCustomerDto updateCustomerDto)
+        public async Task<ActionResult<ApiResponse>> UpdateCustomer(int id, UpdateCustomerDto updateCustomerDto)
         {
             if (!ModelState.IsValid)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{UpdateCustomer}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("PUT")
+                        .SetErrorMessage("The model state is invalid!")
+                        .Build();
 
 
                 return BadRequest(_response);
@@ -196,6 +342,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The given id is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{UpdateCustomer}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("PUT")
+                        .SetErrorMessage("The given id is invalid!")
+                        .Build();
 
                 return BadRequest(_response);
 
@@ -207,6 +360,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("No matching with given ids");
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{UpdateCustomer}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("PUT")
+                        .SetErrorMessage("No matching with given ids")
+                        .Build();
 
 
                 return BadRequest(_response);
@@ -221,15 +382,32 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
 
 
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{UpdateCustomer}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("PUT")
+                        .SetErrorMessage("The model state is invalid!")
+                        .Build();
+
+
                 return BadRequest(_response);
             }
 
             if (!await _customerRepository.IsExistAsync(i => i.Id == id, tracked: false))
             {
                 _response.StatusCode = HttpStatusCode.NotFound;
-                _response.ErrorMessages.Add("No customer found with the given Id");
+                _response.ErrorMessages.Add("No customer found with the given Id!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{UpdateCustomer}")
+                        .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                        .SetMethodType("PUT")
+                        .SetErrorMessage("No customer found with given id!")
+                        .Build();
 
                 return BadRequest(_response);
             }
@@ -242,10 +420,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (!updatedCustomer)
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("An error exists while updating the customer!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went error while updating the customer!");
                 _response.data = null;
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{UpdateCustomer}")
+                        .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                        .SetMethodType("PUT")
+                        .SetErrorMessage("Something went error while updating the customer!")
+                        .Build();
 
 
                 return BadRequest(_response);
@@ -258,6 +444,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
 
 
+            _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{UpdateCustomer}")
+                        .SetStatusCode(HttpStatusCode.OK.ToString())
+                        .SetMethodType("PUT")
+                        .Build();
+
+
             return Ok(_response);
         }
 
@@ -265,7 +459,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Delete(int id)
+        public async Task<ActionResult<ApiResponse>> DeleteCustomer(int id)
         {
             if (!ModelState.IsValid)
             {
@@ -273,6 +467,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{DeleteCustomer}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("DELETE")
+                        .SetErrorMessage("The model state is invalid!")
+                        .Build();
 
                 return BadRequest(_response);
             }
@@ -283,6 +485,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The given id is not valid!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{DeleteCustomer}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("DELETE")
+                        .SetErrorMessage("The given id is not valid!")
+                        .Build();
 
 
                 return BadRequest(_response);
@@ -296,6 +507,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
 
 
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{DeleteCustomer}")
+                        .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                        .SetMethodType("DELETE")
+                        .SetErrorMessage("The customer with given id is not found!")
+                        .Build();
+
                 return BadRequest(_response);
             }
 
@@ -304,10 +523,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (customerModel == null)
             {
 
-                _response.StatusCode = HttpStatusCode.NotFound;
-                _response.ErrorMessages.Add("the customer model is null!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went error while getting the customer record!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{DeleteCustomer}")
+                        .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                        .SetMethodType("DELETE")
+                        .SetErrorMessage("Something went wrong while getting the customer record!")
+                        .Build();
 
                 return BadRequest(_response);
             }
@@ -317,9 +544,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (!deletedCustomer)
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("An error exist while deleting the customer!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while deleting the customer record");
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{DeleteCustomer}")
+                        .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                        .SetMethodType("DELETE")
+                        .SetErrorMessage("Something went wrong while deleting the customer record!")
+                        .Build();
+
 
 
                 return BadRequest(_response);
@@ -328,6 +564,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.StatusCode = HttpStatusCode.OK;
 
             _response.IsSuccess = true;
+
+
+            _loggingModelBuilder
+                        .SetSuccess()
+                        .SetDetails($"{nameof(CustomersController)}/{DeleteCustomer}")
+                        .SetStatusCode(HttpStatusCode.OK.ToString())
+                        .SetMethodType("DELETE")
+                        .Build();
 
 
             return Ok(_response);
@@ -346,6 +590,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The given id is not valid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{GetCustomerDemographicsByCustomer}")
+                        .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                        .SetMethodType("GET")
+                        .SetErrorMessage("The given id is not valid")
+                        .Build();
+
 
                 return BadRequest(_response);
             }
@@ -358,35 +610,75 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.NotFound;
 
 
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{GetCustomerDemographicsByCustomer}")
+                        .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                        .SetMethodType("GET")
+                        .SetErrorMessage("The customer with given id is not found!")
+                        .Build();
+
+
                 return BadRequest(_response);
             }
 
             var customerDemographics = await _customerRepository.GetCustomerDemographicsByCustomerAsync(id);
 
-            if(customerDemographics == null)
-            {
-                _response.ErrorMessages.Add("Something went wrong while getting customer demographics");
-                _response.IsSuccess = false;
-                _response.StatusCode = HttpStatusCode.NotFound;
 
-                return NotFound(_response);
-            }
-
-
-            if(customerDemographics.Count() == 0)
+            if (customerDemographics.Count() == 0)
             {
                 _response.ErrorMessages.Add("No record was found!");
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.NotFound;
 
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(CustomersController)}/{GetCustomerDemographicsByCustomer}")
+                       .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                       .SetMethodType("GET")
+                       .SetErrorMessage("No record was found!")
+                       .Build();
+
+
                 return NotFound(_response);
             }
+
+
+
+            if (customerDemographics == null)
+            {
+                _response.ErrorMessages.Add("Something went wrong while getting customer demographics");
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+
+
+                _loggingModelBuilder
+                        .SetFailed()
+                        .SetDetails($"{nameof(CustomersController)}/{GetCustomerDemographicsByCustomer}")
+                        .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                        .SetMethodType("GET")
+                        .SetErrorMessage("Something went wrong while getting customer demographics")
+                        .Build();
+
+                return NotFound(_response);
+            }
+
+
+            
 
             var customerDemographicsResponse = _mapper.Map<List<ReadCustomerDemographicDto>>(customerDemographics);
 
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
             _response.data = customerDemographicsResponse;
+
+            _loggingModelBuilder
+                       .SetSuccess()
+                       .SetDetails($"{nameof(CustomersController)}/{GetCustomerDemographicsByCustomer}")
+                       .SetStatusCode(HttpStatusCode.OK.ToString())
+                       .SetMethodType("GET")
+                       .Build();
 
             return Ok(_response);
         }
@@ -405,6 +697,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
 
 
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(CustomersController)}/{GetOrdersByCustomer}")
+                       .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                       .SetMethodType("GET")
+                       .SetErrorMessage("The given id is not valid!")
+                       .Build();
+
                 return BadRequest(_response);
             }
 
@@ -415,6 +715,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.NotFound;
 
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(CustomersController)}/{GetOrdersByCustomer}")
+                       .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                       .SetMethodType("GET")
+                       .SetErrorMessage("The customer with given id is not found!")
+                       .Build();
 
                 return BadRequest(_response);
             }
@@ -422,11 +729,39 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             var orders = await _customerRepository.GetOrdersByCustomerAsync(id);
 
+
+            if (orders.IsNullOrEmpty())
+            {
+                _response.StatusCode = HttpStatusCode.NotFound;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("No record was found!");
+
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(CustomersController)}/{GetOrdersByCustomer}")
+                       .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                       .SetMethodType("GET")
+                       .SetErrorMessage("No record was found!")
+                       .Build();
+
+                return BadRequest(_response);
+            }
+
             if(orders == null)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
                 _response.ErrorMessages.Add("Something went wrong while getting orders!");
+
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(CustomersController)}/{GetOrdersByCustomer}")
+                       .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                       .SetMethodType("GET")
+                       .SetErrorMessage("Something went wrong while getting orders!")
+                       .Build();
 
                 return BadRequest(_response);
             }
@@ -436,6 +771,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
             _response.data = ordersResponse;
+
+            _loggingModelBuilder
+                       .SetSuccess()
+                       .SetDetails($"{nameof(CustomersController)}/{GetOrdersByCustomer}")
+                       .SetStatusCode(HttpStatusCode.OK.ToString())
+                       .SetMethodType("GET")
+                       .Build();
 
             return Ok(ordersResponse);
         } 
