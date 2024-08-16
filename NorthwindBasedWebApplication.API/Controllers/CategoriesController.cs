@@ -18,12 +18,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private readonly ICategoryRepository _categoryRepository;
         private ApiResponse _response;
         private readonly IMapper _mapper;
+        private readonly ILogger<CategoriesController> _logger;
 
-        public CategoriesController(ICategoryRepository categoryRepository, IMapper mapper)
+        public CategoriesController(ICategoryRepository categoryRepository, IMapper mapper, ILogger<CategoriesController> logger)
         {
             _categoryRepository = categoryRepository;
             _response = new();
             _mapper = mapper;
+            _logger = logger;
         }
 
 

@@ -18,12 +18,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private readonly IEmployeeRepository _employeeRepository;
         private ApiResponse _response;
         private readonly IMapper _mapper;
-
-        public EmployeesController(IEmployeeRepository employeeRepository, IMapper mapper)
+        private readonly ILogger<EmployeesController> _logger;
+        public EmployeesController(IEmployeeRepository employeeRepository, IMapper mapper,
+            ILogger<EmployeesController> logger)
         {
             _employeeRepository = employeeRepository;
             _response = new();
             _mapper = mapper;
+            _logger = logger;
         }
 
 

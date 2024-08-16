@@ -16,12 +16,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private readonly ISupplierRepository _supplierRepository;
         private ApiResponse _response;
         private readonly IMapper _mapper;
+        private readonly ILogger<SuppliersController> _logger;
 
-        public SuppliersController(ISupplierRepository supplierRepository, IMapper mapper)
+        public SuppliersController(ISupplierRepository supplierRepository, IMapper mapper,
+            ILogger<SuppliersController> logger)
         {
             _supplierRepository = supplierRepository;
             _response = new();
             _mapper = mapper;
+            _logger = logger;
         }
 
 

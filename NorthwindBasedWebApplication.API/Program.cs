@@ -44,11 +44,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 
-builder.Host.UseSerilog((context, service, configuration) =>
+builder.Host.UseSerilog((context, configuration) =>
 {
     configuration.ReadFrom.Configuration(context.Configuration);
 });
-
 
 
 var app = builder.Build();

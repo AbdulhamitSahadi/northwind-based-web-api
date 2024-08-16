@@ -16,12 +16,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private readonly IShipperRepository _shipperRepository;
         private ApiResponse _response;
         private readonly IMapper _mapper;
+        private readonly ILogger<ShippersController> _logger;
 
-        public ShippersController(IShipperRepository shipperRepository, IMapper mapper)
+        public ShippersController(IShipperRepository shipperRepository, IMapper mapper,
+            ILogger<ShippersController> logger)
         {
             _shipperRepository = shipperRepository;
             _response = new();
             _mapper = mapper;
+            _logger = logger;
         }
 
 

@@ -20,12 +20,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private readonly ITerritoryRepository _territoryRepository;
         private ApiResponse _response;
         private readonly IMapper _mapper;
+        private readonly ILogger<TerritoriesController> _logger;
 
-        public TerritoriesController(ITerritoryRepository territoryRepository, IMapper mapper)
+        public TerritoriesController(ITerritoryRepository territoryRepository, IMapper mapper,
+            ILogger<TerritoriesController> logger)
         {
             _territoryRepository = territoryRepository;
             _response = new();
             _mapper = mapper;
+            _logger = logger;
         }
 
 

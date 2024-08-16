@@ -20,12 +20,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private readonly IProductRepository _productRepository;
         private ApiResponse _response;
         private readonly IMapper _mapper;
+        private readonly ILogger<ProductsController> _logger;
 
-        public ProductsController(IProductRepository productRepository, IMapper mapper)
+        public ProductsController(IProductRepository productRepository, IMapper mapper,
+            ILogger<ProductsController> logger)
         {
             _productRepository = productRepository;
             _response = new();
             _mapper = mapper;
+            _logger = logger;
         }
 
 

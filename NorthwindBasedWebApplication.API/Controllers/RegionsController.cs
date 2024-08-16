@@ -18,12 +18,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private readonly IRegionRepository _regionRepository;
         private ApiResponse _response;
         private readonly IMapper _mapper;
+        private readonly ILogger<RegionsController> _logger;
 
-        public RegionsController(IRegionRepository regionRepository, IMapper mapper)
+        public RegionsController(IRegionRepository regionRepository, IMapper mapper,
+            ILogger<RegionsController> logger)
         {
             _regionRepository = regionRepository;
             _response = new();
             _mapper = mapper;
+            _logger = logger;
         }
 
 

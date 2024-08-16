@@ -16,12 +16,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private readonly IOrderRepository _orderRepository;
         private ApiResponse _response;
         private readonly IMapper _mapper;
+        private readonly ILogger<OrdersController> _logger;
 
-        public OrdersController(IOrderRepository orderRepository, IMapper mapper)
+        public OrdersController(IOrderRepository orderRepository, IMapper mapper, ILogger<OrdersController> logger)
         {
             _orderRepository = orderRepository;
             _response = new();
             _mapper = mapper;
+            _logger = logger;
         }
 
 

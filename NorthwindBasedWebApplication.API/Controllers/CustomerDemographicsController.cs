@@ -17,12 +17,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private readonly ICustomerDemographicRepository _customerDemographicRepository;
         private ApiResponse _response;
         private readonly IMapper _mapper;
+        private readonly ILogger<CustomerDemographicsController> _logger;
 
-        public CustomerDemographicsController(ICustomerDemographicRepository customerDemographicRepository, IMapper mapper)
+        public CustomerDemographicsController(ICustomerDemographicRepository customerDemographicRepository, IMapper mapper,
+            ILogger<CustomerDemographicsController> logger)
         {
             _customerDemographicRepository = customerDemographicRepository;
             _response = new();
             _mapper = mapper;
+            _logger = logger;
         }
 
 

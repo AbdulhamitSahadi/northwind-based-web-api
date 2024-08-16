@@ -14,11 +14,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly ApiResponse _response;
+        private readonly ILogger<AuthenticationController> _logger;
 
-        public AuthenticationController(IUserRepository userRepository)
+        public AuthenticationController(IUserRepository userRepository, ILogger<AuthenticationController> logger)
         {
             _userRepository = userRepository;
             _response = new();
+            _logger = logger;
         }
 
 
