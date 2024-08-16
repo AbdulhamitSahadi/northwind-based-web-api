@@ -7,6 +7,7 @@ using NorthwindBasedWebApplication.API.Repositories.IRepository;
 using System.Net;
 using NorthwindBasedWebApplication.API.Models.DTOs.TerritoryDTOs;
 using NorthwindBasedWebApplication.API.Models.DTOs.OrderDTOs;
+using Microsoft.IdentityModel.Tokens;
 
 namespace NorthwindBasedWebApplication.API.Controllers
 {
@@ -19,6 +20,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private ApiResponse _response;
         private readonly IMapper _mapper;
         private readonly ILogger<EmployeesController> _logger;
+        private readonly LoggingModelBuilder _loggingModelBuilder;
+
         public EmployeesController(IEmployeeRepository employeeRepository, IMapper mapper,
             ILogger<EmployeesController> logger)
         {
@@ -26,6 +29,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response = new();
             _mapper = mapper;
             _logger = logger;
+            _loggingModelBuilder = new();
         }
 
 
@@ -41,16 +45,49 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{GetEmployees}")
+                       .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                       .SetMethodType("GET")
+                       .SetErrorMessage("The model state is invalid!")
+                       .Build();
+
                 return BadRequest(_response);
             }
 
             var employees = await _employeeRepository.GetAllAsync(tracked: false);
 
+            if (employees.IsNullOrEmpty())
+            {
+                _response.StatusCode = HttpStatusCode.NotFound;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("No Employees records was found!");
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{GetEmployees}")
+                       .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                       .SetMethodType("GET")
+                       .SetErrorMessage("No Employees records was found!")
+                       .Build();
+
+                return BadRequest(_response);
+            }
+
             if (employees == null)
             {
                 _response.StatusCode = HttpStatusCode.NotFound;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add("No employees found in database!");
+                _response.ErrorMessages.Add("Something went wrong while getting the employees records");
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{GetEmployees}")
+                       .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                       .SetMethodType("GET")
+                       .SetErrorMessage("Something went wrong while getting the employees records")
+                       .Build();
 
                 return BadRequest(_response);
             }
@@ -60,6 +97,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
             _response.data = employeesResponse;
+
+            _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{GetEmployees}")
+                       .SetStatusCode(HttpStatusCode.OK.ToString())
+                       .SetMethodType("GET")
+                       .Build();
 
             return Ok(_response);
         }
@@ -75,6 +119,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{GetEmployee}")
+                       .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                       .SetMethodType("GET")
+                       .SetErrorMessage("The model state is invalid!")
+                       .Build();
+
+                return BadRequest(_response);
             }
 
             if (id <= 0)
@@ -82,6 +136,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The given id is invalid");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{GetEmployee}")
+                       .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                       .SetMethodType("GET")
+                       .SetErrorMessage("The given id is invalid!")
+                       .Build();
+
+
+                return BadRequest(_response);
             }
 
             if (!await _employeeRepository.IsExistAsync(i => i.Id == id))
@@ -89,23 +155,53 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("No employee found with given id!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{GetEmployee}")
+                       .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                       .SetMethodType("GET")
+                       .SetErrorMessage("No employee found with givne id!")
+                       .Build();
+
+                return BadRequest(_response);   
             }
 
             var employeeModel = await _employeeRepository.GetAsync(i => i.Id == id, tracked: false);
 
             if (employeeModel == null)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("En error exists while getting the employee!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while getting the employee!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{GetEmployee}")
+                       .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                       .SetMethodType("GET")
+                       .SetErrorMessage("Something went wrong while getting the employee!")
+                       .Build();
+
+
+                return BadRequest(_response);
             }
 
             var employeeResponse = _mapper.Map<ReadEmployeeDto>(employeeModel);
 
             _response.StatusCode = HttpStatusCode.OK;
-            _response.ErrorMessages.Add(string.Empty);
             _response.data = employeeResponse;
             _response.IsSuccess = true;
+
+            _loggingModelBuilder
+                       .SetSuccess()
+                       .SetDetails($"{nameof(EmployeesController)}/{GetEmployee}")
+                       .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                       .SetMethodType("GET")
+                       .Build();
+
 
             return Ok(_response);
         }
@@ -114,7 +210,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create([FromQuery] int? reportsTo,
+        public async Task<ActionResult<ApiResponse>> CreateEmployee([FromQuery] int? reportsTo,
             [FromBody] CreateEmployeeDto createEmployeeDto)
         {
 
@@ -125,15 +221,31 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
 
 
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{CreateEmployee}")
+                       .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                       .SetMethodType("POST")
+                       .SetErrorMessage("The model state is invalid!")
+                       .Build();
+
                 return BadRequest(_response);
             }
 
             if (createEmployeeDto == null)
             {
-                _response.ErrorMessages.Add("Something went wrong while creating the employee");
+                _response.ErrorMessages.Add("No content sent it!");
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.BadRequest;
 
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{CreateEmployee}")
+                       .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                       .SetMethodType("POST")
+                       .SetErrorMessage("No content sent it!")
+                       .Build();
 
                 return BadRequest(_response);
             }
@@ -144,6 +256,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The customer's Home phone is exists, please choose another!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{CreateEmployee}")
+                       .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                       .SetMethodType("POST")
+                       .SetErrorMessage("The customer's Home phone is exists, please choose another!")
+                       .Build();
 
                 return BadRequest(_response);
             }
@@ -160,7 +279,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
             {
                 _response.ErrorMessages.Add("Something went error while creating employee");
                 _response.IsSuccess = false;
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{CreateEmployee}")
+                       .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                       .SetMethodType("POST")
+                       .SetErrorMessage("Something went wrong while creating the employee")
+                       .Build();
 
 
                 return BadRequest(_response);
@@ -169,13 +296,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
 
+            _loggingModelBuilder
+                .SetFailed()
+                .SetDetails($"{nameof(EmployeesController)}/{CreateEmployee}")
+                .SetStatusCode(HttpStatusCode.OK.ToString())
+                .SetMethodType("POST")
+                .Build();
+
             return Ok(_response);
         }
 
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Update(int id, [FromQuery] int? reportsTo,
+        public async Task<ActionResult<ApiResponse>> UpdateEmployee(int id, [FromQuery] int? reportsTo,
             [FromBody]UpdateEmployeeDto updateEmployeeDto)
         {
             if (!ModelState.IsValid)
@@ -184,6 +318,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{UpdateEmployee}")
+                       .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                       .SetMethodType("PUT")
+                       .SetErrorMessage("The model state is invalid!")
+                       .Build();
 
                 return BadRequest(_response);
             }
@@ -195,6 +337,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.BadRequest;
 
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{UpdateEmployee}")
+                       .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                       .SetMethodType("PUT")
+                       .SetErrorMessage("The given ids are not match!")
+                       .Build();
 
                 return BadRequest(_response);
 
@@ -208,6 +358,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
 
 
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{UpdateEmployee}")
+                       .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                       .SetMethodType("PUT")
+                       .SetErrorMessage("No matching with given ids")
+                       .Build();
+
                 return BadRequest(_response);
             }
 
@@ -215,9 +373,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (updateEmployeeDto == null)
             {
 
-                _response.ErrorMessages.Add("The content you provide is null");
+                _response.ErrorMessages.Add("The content you provide is empty!");
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.NoContent;
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{UpdateEmployee}")
+                       .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                       .SetMethodType("PUT")
+                       .SetErrorMessage("The content you provide is empty!")
+                       .Build();
 
 
                 return BadRequest(_response);
@@ -229,6 +395,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The employee with given id is not found");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{UpdateEmployee}")
+                       .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                       .SetMethodType("PUT")
+                       .SetErrorMessage("The employee with given id is not found!")
+                       .Build();
 
                 return BadRequest(_response);
             }
@@ -242,9 +415,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (!updatedEmployee)
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("An error exists while updating the employee!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went error while updating the employee!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{UpdateEmployee}")
+                       .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                       .SetMethodType("PUT")
+                       .SetErrorMessage("Something went wrong while updating the employee!")
+                       .Build();
 
 
                 return BadRequest(_response);
@@ -252,6 +434,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
+
+            _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{UpdateEmployee}")
+                       .SetStatusCode(HttpStatusCode.OK.ToString())
+                       .SetMethodType("PUT")
+                       .Build();
 
 
             return Ok(_response);
@@ -261,7 +450,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Delete(int id)
+        public async Task<ActionResult<ApiResponse>> DeleteEmployee(int id)
         {
             if (!ModelState.IsValid)
             {
@@ -269,7 +458,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.BadRequest;
 
-
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{DeleteEmployee}")
+                       .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                       .SetMethodType("DELETE")
+                       .SetErrorMessage("The model state is invalid!")
+                       .Build();
 
                 return BadRequest(_response);
             }
@@ -282,6 +477,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
 
 
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{DeleteEmployee}")
+                       .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                       .SetMethodType("DELETE")
+                       .SetErrorMessage("The given is invalid!")
+                       .Build();
+
                 return BadRequest(_response);
             }
 
@@ -293,6 +496,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
 
 
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{DeleteEmployee}")
+                       .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                       .SetMethodType("DELETE")
+                       .SetErrorMessage("The employee with given id is not found!")
+                       .Build();
+
                 return BadRequest(_response);
             }
 
@@ -301,10 +512,19 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (employeeModel == null)
             {
 
-                _response.StatusCode = HttpStatusCode.NoContent;
-                _response.ErrorMessages.Add("the employee model is null!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went error while getting the employee");
  
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                       .SetFailed()
+                       .SetDetails($"{nameof(EmployeesController)}/{nameof(DeleteEmployee)}")
+                       .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                       .SetMethodType("DELETE")
+                       .SetErrorMessage("Something went error while getting the employee")
+                       .Build();
+
 
 
                 return BadRequest(_response);
@@ -315,9 +535,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (!deletedEmployee)
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("An error exist while deleting the employee!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went error while deleting the employee");
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                      .SetFailed()
+                      .SetDetails($"{nameof(EmployeesController)}/{nameof(DeleteEmployee)}")
+                      .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                      .SetMethodType("DELETE")
+                      .SetErrorMessage("Something went error while deleting the employee")
+                      .Build();
 
 
                 return BadRequest(_response);
@@ -326,6 +554,12 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
 
+            _loggingModelBuilder
+                      .SetSuccess()
+                      .SetDetails($"{nameof(EmployeesController)}/{nameof(DeleteEmployee)}")
+                      .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                      .SetMethodType("DELETE")
+                      .Build();
 
             return Ok(_response);
         }
@@ -341,6 +575,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.BadRequest;
 
+                _loggingModelBuilder
+                    .SetFailed()
+                    .SetDetails($"{nameof(EmployeesController)}/{nameof(GetTerritoriesByEmployee)}")
+                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                    .SetMethodType("GET")
+                    .SetErrorMessage("The given is is invalid!")
+                    .Build();
+
+
                 return BadRequest(_response);
             }
 
@@ -349,6 +592,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("The employee with given id is not found");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                    .SetFailed()
+                    .SetDetails($"{nameof(EmployeesController)}/{nameof(GetTerritoriesByEmployee)}")
+                    .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                    .SetMethodType("GET")
+                    .SetErrorMessage("The employee with given id is not found")
+                    .Build();
 
                 return BadRequest(_response);
             }
@@ -359,7 +611,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
             {
                 _response.ErrorMessages.Add("Something went wrong while getting the territories");
                 _response.IsSuccess = false;
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+
+                _loggingModelBuilder
+                    .SetFailed()
+                    .SetDetails($"{nameof(EmployeesController)}/{nameof(GetTerritoriesByEmployee)}")
+                    .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                    .SetMethodType("GET")
+                    .SetErrorMessage("Something went wrong while getting the territories")
+                    .Build();
+
 
                 return BadRequest(_response);
             }
@@ -369,6 +630,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.data = territoriesResponse;
             _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
+
+            _loggingModelBuilder
+                .SetSuccess()
+                .SetDetails($"{nameof(EmployeesController)}/{nameof(GetTerritoriesByEmployee)}")
+                .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                .SetMethodType("GET")
+                .Build();
 
             return Ok(_response);
         }
@@ -383,6 +651,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The given id is invalid");
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.BadRequest;
+
+                _loggingModelBuilder
+                   .SetSuccess()
+                   .SetDetails($"{nameof(EmployeesController)}/{nameof(GetOrdersByEmployee)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The given id is invalid!")
+                   .Build();
+
+
+
                 return BadRequest(_response);
 
             }
@@ -393,16 +672,51 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The employee with given id not found");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                   .SetSuccess()
+                   .SetDetails($"{nameof(EmployeesController)}/{nameof(GetOrdersByEmployee)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The employee with given id not found!")
+                   .Build();
+
                 return BadRequest(_response);
             }
 
             var orders = await _employeeRepository.GetOrdersByEmployeeAsync(id);
 
-            if(orders == null && orders.Count <= 0)
+
+            if (orders.Count == 0)
+            {
+                _response.ErrorMessages.Add("No orders record found!");
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.NotFound;
+
+                _loggingModelBuilder
+                   .SetSuccess()
+                   .SetDetails($"{nameof(EmployeesController)}/{nameof(GetOrdersByEmployee)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("No orders record found!")
+                   .Build();
+
+                return BadRequest(_response);
+            }
+
+            if (orders == null)
             {
                 _response.ErrorMessages.Add("Something went wrong while getting the orders");
                 _response.IsSuccess = false;
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+
+                _loggingModelBuilder
+                   .SetSuccess()
+                   .SetDetails($"{nameof(EmployeesController)}/{nameof(GetOrdersByEmployee)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("Something went wrong while getting the orders")
+                   .Build();
 
                 return BadRequest(_response);   
             }
@@ -412,6 +726,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
             _response.data = ordersResponse;
+
+
+            _loggingModelBuilder
+                   .SetSuccess()
+                   .SetDetails($"{nameof(EmployeesController)}/{nameof(GetOrdersByEmployee)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("GET")
+                   .Build();
 
             return Ok(_response);
         }
