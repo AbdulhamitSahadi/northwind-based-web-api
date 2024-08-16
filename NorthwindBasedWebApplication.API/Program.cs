@@ -4,6 +4,7 @@ using NorthwindBasedWebApplication.API.Data;
 using NorthwindBasedWebApplication.API.Models;
 using NorthwindBasedWebApplication.API.Repositories.IRepository;
 using NorthwindBasedWebApplication.API.Repositories.Repository;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,13 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+
+builder.Host.UseSerilog((context, service, configuration) =>
+{
+    configuration.ReadFrom.Configuration(context.Configuration);
+});
+
 
 
 var app = builder.Build();
