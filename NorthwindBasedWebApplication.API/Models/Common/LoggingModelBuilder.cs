@@ -4,6 +4,11 @@
     {
         private readonly LoggingModel _logModel;
 
+        public LoggingModelBuilder()
+        {
+            _logModel = new();
+        }
+
         public LoggingModelBuilder SetException(string exception)
         {
             _logModel.Exception = exception;
@@ -71,6 +76,7 @@
             _logModel.StatusCode = statusCode;
             return this;
         }
+
 
         public LoggingModel Build()
         {
