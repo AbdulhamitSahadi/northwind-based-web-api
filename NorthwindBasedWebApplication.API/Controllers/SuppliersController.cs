@@ -17,6 +17,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private ApiResponse _response;
         private readonly IMapper _mapper;
         private readonly ILogger<SuppliersController> _logger;
+        private readonly LoggingModelBuilder _loggingModelBuilder;
 
         public SuppliersController(ISupplierRepository supplierRepository, IMapper mapper,
             ILogger<SuppliersController> logger)
@@ -25,6 +26,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response = new();
             _mapper = mapper;
             _logger = logger;
+            _loggingModelBuilder = new();
         }
 
 
@@ -40,6 +42,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                  .SetFailed()
+                  .SetDetails($"{nameof(SuppliersController)}/{nameof(GetSuppliers)}")
+                  .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                  .SetMethodType("GET")
+                  .SetErrorMessage("The model state is invalid!")
+                  .Build();
+
                 return BadRequest(_response);
             }
 
@@ -47,9 +57,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             if (suppliersModel == null)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add("No suppliers found in database!");
+                _response.ErrorMessages.Add("Something went wrong while getting suppliers!");
+
+
+                _loggingModelBuilder
+                  .SetFailed()
+                  .SetDetails($"{nameof(SuppliersController)}/{nameof(GetSuppliers)}")
+                  .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                  .SetMethodType("GET")
+                  .SetErrorMessage("Something went wrong while getting suppliers!")
+                  .Build();
 
                 return BadRequest(_response);
             }
@@ -59,7 +78,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
             _response.data = supplierResponse;
-            _response.ErrorMessages.Add(string.Empty);
+
+            _loggingModelBuilder
+                  .SetFailed()
+                  .SetDetails($"{nameof(SuppliersController)}/{nameof(GetSuppliers)}")
+                  .SetStatusCode(HttpStatusCode.OK.ToString())
+                  .SetMethodType("GET")
+                  .Build();
 
 
             return Ok(_response);
@@ -77,6 +102,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(GetSupplier)}")
+                 .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                 .SetMethodType("GET")
+                 .SetErrorMessage("The model state is invalid!")
+                 .Build();
+
                 return BadRequest(_response);
             }
 
@@ -86,14 +120,31 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The given id is invalid");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(GetSupplier)}")
+                 .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                 .SetMethodType("GET")
+                 .SetErrorMessage("The given id is invalid")
+                 .Build();
+
                 return BadRequest(_response);
             }
 
             if (!await _supplierRepository.IsExistAsync(i => i.Id == id, tracked:false))
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("No shipper found with given id!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(GetSupplier)}")
+                 .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                 .SetMethodType("GET")
+                 .SetErrorMessage("No shipper found with given id!")
+                 .Build();
 
                 return BadRequest(_response);
             }
@@ -103,16 +154,31 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (supplierModel == null)
             {
                 _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.ErrorMessages.Add("En error exists while getting the supplier!");
+                _response.ErrorMessages.Add("Something went wrong while getting the supplier!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(GetSupplier)}")
+                 .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                 .SetMethodType("GET")
+                 .SetErrorMessage("Something went wrong while getting the supplier!")
+                 .Build();
             }
 
             var supplierResponse = _mapper.Map<ReadSupplierDto>(supplierModel);
 
             _response.StatusCode = HttpStatusCode.OK;
-            _response.ErrorMessages.Add(string.Empty);
             _response.data = supplierResponse;
             _response.IsSuccess = true;
+
+            _loggingModelBuilder
+                 .SetSuccess()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(GetSupplier)}")
+                 .SetStatusCode(HttpStatusCode.OK.ToString())
+                 .SetMethodType("GET")
+                 .Build();
 
             return Ok(_response);
         }
@@ -121,15 +187,22 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create([FromBody]CreateSupplierDto model)
+        public async Task<ActionResult<ApiResponse>> CreateSupplier([FromBody]CreateSupplierDto model)
         {
 
             if (!ModelState.IsValid)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The model state is invalid!");
-                _response.data = null;
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(CreateSupplier)}")
+                 .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                 .SetMethodType("POST")
+                 .SetErrorMessage("The model states is invalid!")
+                 .Build();
 
 
                 return BadRequest(_response);
@@ -137,11 +210,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             if (model == null)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.NoContent;
                 _response.ErrorMessages.Add("The content that send by user is empty!");
-                _response.data = null;
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(CreateSupplier)}")
+                 .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                 .SetMethodType("POST")
+                 .SetErrorMessage("The content that send by user is empty!")
+                 .Build();
 
                 return BadRequest(_response);
             }
@@ -152,6 +232,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The shipper's phone is exists, please choose another!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(CreateSupplier)}")
+                 .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                 .SetMethodType("POST")
+                 .SetErrorMessage("The shipper's phone is exists, please choose another!")
+                 .Build();
 
                 return BadRequest(_response);
             }
@@ -165,9 +253,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (!createdSupplier)
             {
                 _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.ErrorMessages.Add("An error exists while creating the supplier!");
+                _response.ErrorMessages.Add("Something went wrong while creating the supplier!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(CreateSupplier)}")
+                 .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                 .SetMethodType("POST")
+                 .SetErrorMessage("Something went wrong while creating the supplier!")
+                 .Build();
 
                 return BadRequest(_response);
             }
@@ -176,13 +272,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
 
 
+            _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(CreateSupplier)}")
+                 .SetStatusCode(HttpStatusCode.OK.ToString())
+                 .SetMethodType("POST")
+                 .Build();
+
             return Ok(_response);
         }
 
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Update(int id, 
+        public async Task<ActionResult<ApiResponse>> UpdateSupplier(int id, 
             [FromBody]UpdateSupplierDto updateSupplierDto)
         {
             if (!ModelState.IsValid)
@@ -191,6 +294,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(UpdateSupplier)}")
+                 .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                 .SetMethodType("PUT")
+                 .SetErrorMessage("The model state is invalid!")
+                 .Build();
 
                 return BadRequest(_response);
             }
@@ -202,6 +313,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The given id is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(UpdateSupplier)}")
+                 .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                 .SetMethodType("PUT")
+                 .SetErrorMessage("The given id is invalid!")
+                 .Build();
 
                 return BadRequest(_response);
 
@@ -214,6 +332,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("No matching with given ids");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(UpdateSupplier)}")
+                 .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                 .SetMethodType("PUT")
+                 .SetErrorMessage("No matching with given ids")
+                 .Build();
 
                 return BadRequest(_response);
             }
@@ -222,9 +347,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (updateSupplierDto == null)
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.NoContent;
                 _response.ErrorMessages.Add("The content of give model is empty");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(UpdateSupplier)}")
+                 .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                 .SetMethodType("PUT")
+                 .SetErrorMessage("The content of give model is empty")
+                 .Build();
 
 
                 return BadRequest(_response);
@@ -238,6 +372,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("No supplier found with the given Id");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(UpdateSupplier)}")
+                 .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                 .SetMethodType("PUT")
+                 .SetErrorMessage("No supplier found with the given Id")
+                 .Build();
 
                 return BadRequest(_response);
             }
@@ -251,15 +392,30 @@ namespace NorthwindBasedWebApplication.API.Controllers
             {
 
                 _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.ErrorMessages.Add("An error exists while updating the supplier!");
+                _response.ErrorMessages.Add("Something went error while updating the supplier!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(UpdateSupplier)}")
+                 .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                 .SetMethodType("PUT")
+                 .SetErrorMessage("Something went error while updating the supplier!")
+                 .Build();
 
                 return BadRequest(_response);
             }
 
             _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
+
+
+            _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(UpdateSupplier)}")
+                 .SetStatusCode(HttpStatusCode.OK.ToString())
+                 .SetMethodType("PUT")
+                 .Build();
 
 
             return Ok(_response);
@@ -269,7 +425,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Delete(int id)
+        public async Task<ActionResult<ApiResponse>> DeleteSupplier(int id)
         {
             if (!ModelState.IsValid)
             {
@@ -277,6 +433,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(DeleteSupplier)}")
+                 .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                 .SetMethodType("DELETE")
+                 .SetErrorMessage("The model state is invalid!")
+                 .Build();
 
                 return BadRequest(_response);
             }
@@ -288,6 +451,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The given id is not valid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(DeleteSupplier)}")
+                 .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                 .SetMethodType("DELETE")
+                 .SetErrorMessage("The given id is not valid!")
+                 .Build();
 
                 return BadRequest(_response);
             }
@@ -299,6 +469,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The supplier with given id is not found!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(DeleteSupplier)}")
+                 .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                 .SetMethodType("DELETE")
+                 .SetErrorMessage("The supplier with given id is not found!")
+                 .Build();
 
                 return BadRequest(_response);
             }
@@ -308,9 +485,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (supplierModel == null)
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("the supplier model is null!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while getting the supplier model!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(DeleteSupplier)}")
+                 .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                 .SetMethodType("DELETE")
+                 .SetErrorMessage("Something went wrong while getting the supplier model!")
+                 .Build();
 
 
                 return BadRequest(_response);
@@ -322,8 +508,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
             {
 
                 _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.ErrorMessages.Add("An error exist while deleting the supplier!");
+                _response.ErrorMessages.Add("Something went wrong while deleting the supplier!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(DeleteSupplier)}")
+                 .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                 .SetMethodType("DELETE")
+                 .SetErrorMessage("Something went wrong while deleting the supplier!")
+                 .Build();
 
 
                 return BadRequest(_response);
@@ -333,6 +528,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
 
+
+            _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(DeleteSupplier)}")
+                 .SetStatusCode(HttpStatusCode.OK.ToString())
+                 .SetMethodType("DELETE")
+                 .Build();
 
             return Ok(_response);
         }
@@ -348,6 +550,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(GetProductsBySupplier)}")
+                 .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                 .SetMethodType("GET")
+                 .SetErrorMessage("The model state is invalid!")
+                 .Build();
+
                 return BadRequest(_response);
             }
 
@@ -357,25 +567,51 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The given id is invalid");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(GetProductsBySupplier)}")
+                 .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                 .SetMethodType("GET")
+                 .SetErrorMessage("The given id is invalid")
+                 .Build();
+
                 return BadRequest(_response);
             }
 
             if (!await _supplierRepository.IsExistAsync(i => i.Id == id, tracked: false))
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("No shipper found with given id!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(GetProductsBySupplier)}")
+                 .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                 .SetMethodType("GET")
+                 .SetErrorMessage("No shipper found with given id!")
+                 .Build();
 
                 return BadRequest(_response);
             }
 
             var products = await _supplierRepository.GetProductsBySupplier(id);
 
-            if(products == null || products.Count <= 0)
+            if(products == null)
             {
                 _response.ErrorMessages.Add("Something went wrong while getting the products of supplier");
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.InternalServerError;
+
+
+                _loggingModelBuilder
+                 .SetFailed()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(GetProductsBySupplier)}")
+                 .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                 .SetMethodType("GET")
+                 .SetErrorMessage("Something went wrong while getting the products of supplier")
+                 .Build();
 
                 return BadRequest(_response);
             }
@@ -383,6 +619,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
             _response.data = _mapper.Map<List<ReadProductDto>>(products);
+
+            _loggingModelBuilder
+                 .SetSuccess()
+                 .SetDetails($"{nameof(SuppliersController)}/{nameof(GetProductsBySupplier)}")
+                 .SetStatusCode(HttpStatusCode.OK.ToString())
+                 .SetMethodType("GET")
+                 .Build();
 
             return Ok(_response);
         }
