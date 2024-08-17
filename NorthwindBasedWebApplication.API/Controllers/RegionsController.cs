@@ -19,6 +19,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private ApiResponse _response;
         private readonly IMapper _mapper;
         private readonly ILogger<RegionsController> _logger;
+        private readonly LoggingModelBuilder _loggingModelBuilder;
 
         public RegionsController(IRegionRepository regionRepository, IMapper mapper,
             ILogger<RegionsController> logger)
@@ -27,6 +28,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response = new();
             _mapper = mapper;
             _logger = logger;
+            _loggingModelBuilder = new();
         }
 
 
@@ -42,6 +44,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetRegions)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The model state is invalid!")
+                   .Build();
+
                 return BadRequest(_response);
             }
 
@@ -49,9 +59,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             if (regionsModel == null)
             {
-                _response.StatusCode = HttpStatusCode.NotFound;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add("No regions found in database!");
+                _response.ErrorMessages.Add("Something went wrong while getting the regions");
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetRegions)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("Something went wrong while getting the regions")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -62,6 +80,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.StatusCode = HttpStatusCode.OK;
             _response.data = regionsResponse;
 
+
+            _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetRegions)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("GET")
+                   .Build();
 
             return Ok(_response);
         }
@@ -78,6 +103,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetRegion)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The model state is invalid!")
+                   .Build();
+
                 return BadRequest(_response);
             }
 
@@ -86,6 +120,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The given id is invalid");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetRegion)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The given id is invalid")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -96,6 +139,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("No product found with given id!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetRegion)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("No product found with given id!")
+                   .Build();
+
                 return BadRequest(_response);
             }
 
@@ -103,9 +155,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             if (regionModel == null)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("En error exists while getting the region!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while getting the region!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetRegion)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("Something went wrong while getting the region!")
+                   .Build();
             }
 
             var regionResponse = _mapper.Map<ReadRegionDto>(regionModel);
@@ -114,6 +175,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.data = regionResponse;
             _response.IsSuccess = true;
 
+            _loggingModelBuilder
+                   .SetSuccess()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetRegion)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("GET")
+                   .Build();
+
             return Ok(_response);
         }
 
@@ -121,7 +189,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create([FromBody]CreateRegionDto model)
+        public async Task<ActionResult<ApiResponse>> CreateRegion([FromBody]CreateRegionDto model)
         {
 
             if (!ModelState.IsValid)
@@ -129,6 +197,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(CreateRegion)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("POST")
+                   .SetErrorMessage("The model state is invalid!")
+                   .Build();
 
 
                 return BadRequest(_response);
@@ -141,6 +218,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
 
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(CreateRegion)}")
+                   .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                   .SetMethodType("POST")
+                   .SetErrorMessage("The content that send by user is empty!")
+                   .Build();
+
+
                 return BadRequest(_response);
             }
 
@@ -150,6 +236,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The region's description is exists, please choose another!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(CreateRegion)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("POST")
+                   .SetErrorMessage("The region's description is exists, please choose another!")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -162,10 +256,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             if (!createdRegion)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
                 _response.ErrorMessages.Add("Something went wrong while creating the region!");
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(CreateRegion)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("POST")
+                   .SetErrorMessage("Something went wrong while creating the region!")
+                   .Build();
 
                 return BadRequest(_response);
             } 
@@ -174,13 +276,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
 
 
+            _loggingModelBuilder
+                   .SetSuccess()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(CreateRegion)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("POST")
+                   .Build();
+
             return Ok(_response);
         }
 
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Update(int id, 
+        public async Task<ActionResult<ApiResponse>> UpdateRegion(int id, 
             [FromBody]UpdateRegionDto updateRegionDto)
         {
             if (!ModelState.IsValid)
@@ -189,6 +298,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateRegion)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("PUT")
+                   .SetErrorMessage("The model state is invalid!")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -199,6 +316,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The given id is invalid!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateRegion)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("PUT")
+                   .SetErrorMessage("The given id is invalid!")
+                   .Build();
 
 
                 return BadRequest(_response);
@@ -212,6 +338,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("No matching with given ids");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateRegion)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("PUT")
+                   .SetErrorMessage("No matching with given ids")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -220,10 +353,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (updateRegionDto == null)
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.NoContent;
                 _response.ErrorMessages.Add("The content of give model is empty");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateRegion)}")
+                   .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                   .SetMethodType("PUT")
+                   .SetErrorMessage("The content of give model is empty")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -233,6 +373,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("No region found with the given Id");
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateRegion)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("PUT")
+                   .SetErrorMessage("No region found with the given Id")
+                   .Build();
+
+
 
 
                 return BadRequest(_response);
@@ -246,9 +396,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (!updatedRegion)
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("An error exists while updating the region!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while updating the region");
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateRegion)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("PUT")
+                   .SetErrorMessage("Something went wrong while updating the region")
+                   .Build();
+
 
 
                 return BadRequest(_response);
@@ -258,6 +417,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
 
 
+            _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateRegion)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("PUT")
+                   .Build();
+
             return Ok(_response);
         }
 
@@ -265,15 +431,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Delete(int id)
+        public async Task<ActionResult<ApiResponse>> DeleteRegion(int id)
         {
             if (!ModelState.IsValid)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The model state is invalid!");
-                _response.data = null;
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(DeleteRegion)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("DELETE")
+                   .SetErrorMessage("The model state is invalid!")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -283,8 +455,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The given id is not valid!");
-                _response.data = null;
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(DeleteRegion)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("DELETE")
+                   .SetErrorMessage("The given id is not valid!")
+                   .Build();
 
 
                 return BadRequest(_response);
@@ -293,9 +472,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (!await _regionRepository.IsExistAsync(i => i.Id == id, tracked: false))
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("The product with given id is not found!");
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(DeleteRegion)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("DELETE")
+                   .SetErrorMessage("The product with given id is not found!")
+                   .Build();
 
 
                 return BadRequest(_response);
@@ -306,9 +493,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (regionModel == null)
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("the region model is null!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while getting the region!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(DeleteRegion)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("DELETE")
+                   .SetErrorMessage("Something went wrong while getting the region!")
+                   .Build();
 
 
                 return BadRequest(_response);
@@ -320,8 +516,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
             {
 
                 _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.ErrorMessages.Add("An error exist while deleting the region!");
+                _response.ErrorMessages.Add("Something went wrong while deleting the region!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(DeleteRegion)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("DELETE")
+                   .SetErrorMessage("Something went wrong while deleting the region!")
+                   .Build();
 
 
                 return BadRequest(_response);
@@ -331,6 +536,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
 
+
+            _loggingModelBuilder
+                   .SetSuccess()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(DeleteRegion)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("DELETE")
+                   .Build();
 
             return Ok(_response);
         }
@@ -345,9 +557,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The given id is not valid!");
-                _response.data = null;
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetTerritoriesByRegion)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The given id is not valid!")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -355,10 +573,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (!await _regionRepository.IsExistAsync(i => i.Id == id, tracked: false))
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("The product with given id is not found!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetTerritoriesByRegion)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The product with given id is not found!")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -371,6 +597,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.InternalServerError;
 
+                _loggingModelBuilder
+                  .SetFailed()
+                  .SetDetails($"{nameof(ProductsController)}/{nameof(GetTerritoriesByRegion)}")
+                  .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                  .SetMethodType("GET")
+                  .SetErrorMessage("Something went wrong while getting the territories")
+                  .Build();
+
                 return BadRequest(_response);      
             }
 
@@ -379,6 +613,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
             _response.data = territoriesResponse;
+
+
+            _loggingModelBuilder
+                  .SetFailed()
+                  .SetDetails($"{nameof(ProductsController)}/{nameof(GetTerritoriesByRegion)}")
+                  .SetStatusCode(HttpStatusCode.OK.ToString())
+                  .SetMethodType("GET")
+                  .Build();
 
             return Ok(_response);
         }
