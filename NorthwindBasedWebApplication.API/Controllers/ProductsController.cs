@@ -21,6 +21,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private ApiResponse _response;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductsController> _logger;
+        private readonly LoggingModelBuilder _loggingModelBuilder;
 
         public ProductsController(IProductRepository productRepository, IMapper mapper,
             ILogger<ProductsController> logger)
@@ -29,6 +30,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response = new();
             _mapper = mapper;
             _logger = logger;
+            _loggingModelBuilder = new();
         }
 
 
@@ -44,6 +46,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(OrdersController)}/{nameof(GetProducts)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The model state is invalid!")
+                   .Build();
+
                 return BadRequest(_response);
             }
 
@@ -51,9 +61,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             if (productsModel == null)
             {
-                _response.StatusCode = HttpStatusCode.NotFound;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add("No products found in database!");
+                _response.ErrorMessages.Add("Something went wrong while getting the products");
+
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetProducts)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("Something went wrong while getting the products")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -63,6 +82,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
             _response.data = productsResponse;
+
+            _loggingModelBuilder
+                   .SetSuccess()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetProducts)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("GET")
+                   .Build();
 
 
             return Ok(_response);
@@ -79,6 +105,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetProduct)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The model states is invalid")
+                   .Build();
+
                 return BadRequest(_response);
             }
 
@@ -87,6 +121,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The given id is invalid");
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetProduct)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The given id is invalid")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -97,16 +139,36 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("No product found with given id!");
                 _response.IsSuccess = false;
 
-                return BadRequest(_response);
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetProducts)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("No product found with given id!")
+                   .Build();
+
+                return NotFound(_response);
             }
 
             var productModel = await _productRepository.GetAsync(i => i.Id == id, tracked: false);
 
             if (productModel == null)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("En error exists while getting the product!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while getting the product!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetProduct)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("Something went wrong while getting the product")
+                   .Build();
+
+                return BadRequest(_response);
             }
 
             var productResponse = _mapper.Map<ReadProductDto>(productModel);
@@ -115,6 +177,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.data = productResponse;
             _response.IsSuccess = true;
 
+
+            _loggingModelBuilder
+                   .SetSuccess()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetProducts)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("GET")
+                   .Build();
+
             return Ok(_response);
         }
 
@@ -122,7 +192,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create([FromQuery]int categoryId,
+        public async Task<ActionResult<ApiResponse>> CreateProduct([FromQuery]int categoryId,
             [FromQuery]int supplierId, [FromBody]CreateProductDto createProductDto)
         {
 
@@ -132,16 +202,31 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(CreateProduct)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("POST")
+                   .SetErrorMessage("The model states is invalid!")
+                   .Build();
 
                 return BadRequest(_response);
             }
 
             if (createProductDto == null)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.NoContent;
                 _response.ErrorMessages.Add("The content that send by user is empty!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(CreateProduct)}")
+                   .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                   .SetMethodType("POST")
+                   .SetErrorMessage("The content that send by user is empty!")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -152,6 +237,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The product name is exists, please choose another!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(CreateProduct)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("POST")
+                   .SetErrorMessage("The product name is exists, please choose another!")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -167,10 +260,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             if (!createdProduct)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("An error exists while creating the product!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while creating the product!");
                 _response.IsSuccess = false;
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(CreateProduct)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("POST")
+                   .SetErrorMessage("Something went wrong while creating the product!")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -183,13 +284,22 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
 
 
+
+            _loggingModelBuilder
+                   .SetSuccess()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(CreateProduct)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("POST")
+                   .Build();
+
+
             return Ok(_response);
         }
 
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Update(int id, 
+        public async Task<ActionResult<ApiResponse>> UpdateProduct(int id, 
             [FromQuery]int categoryId, [FromQuery] int supplierId, UpdateProductDto updateProductDto)
         {
             if (!ModelState.IsValid)
@@ -198,6 +308,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateProduct)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("PUT")
+                   .SetErrorMessage("The model state is invalid!")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -210,6 +327,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
 
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateProduct)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("PUT")
+                   .SetErrorMessage("The given id is invalid!")
+                   .Build();
+
                 return BadRequest(_response);
 
             }
@@ -221,6 +346,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("No matching with given ids");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateProduct)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("PUT")
+                   .SetErrorMessage("No matching with given ids")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -234,6 +366,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
 
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateProduct)}")
+                   .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                   .SetMethodType("PUT")
+                   .SetErrorMessage("The content of give model is empty")
+                   .Build();
+
                 return BadRequest(_response);
             }
 
@@ -242,6 +382,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("No product found with the given Id");
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateProduct)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("PUT")
+                   .SetErrorMessage("No product found with the given Id")
+                   .Build();
 
 
                 return NotFound(_response);
@@ -258,9 +406,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (!updatedProduct)
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("An error exists while updating the product!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while updating the product");
                 _response.IsSuccess = false;
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateProduct)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("PUT")
+                   .SetErrorMessage("Something went wrong while updating the product")
+                   .Build();
 
 
                 return BadRequest(_response);
@@ -270,6 +426,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
 
 
+            _loggingModelBuilder
+                   .SetSuccess()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(UpdateProduct)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("PUT")
+                   .Build();
+
             return Ok(_response);
         }
 
@@ -277,7 +440,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> Delete(int id)
+        public async Task<ActionResult<ApiResponse>> DeleteProduct(int id)
         {
             if (!ModelState.IsValid)
             {
@@ -285,6 +448,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(DeleteProduct)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("DELETE")
+                   .SetErrorMessage("The model state is invalid!")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -296,6 +466,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The given id is not valid!");
                 _response.IsSuccess = false;
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(DeleteProduct)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("DELETE")
+                   .SetErrorMessage("The given id is not valid!")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -308,6 +485,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
 
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(DeleteProduct)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("DELETE")
+                   .SetErrorMessage("The product with given id is not found!")
+                   .Build();
+
                 return BadRequest(_response);
             }
 
@@ -316,9 +501,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (productModel == null)
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("the product model is null!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while getting the product!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(DeleteProduct)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("DELETE")
+                   .SetErrorMessage("Something went wrong while getting the product!")
+                   .Build();
 
 
                 return BadRequest(_response);
@@ -329,9 +523,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (!deletedProduct)
             {
 
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.ErrorMessages.Add("An error exist while deleting the product!");
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages.Add("Something went wrong while getting the product!");
                 _response.IsSuccess = false;
+
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(DeleteProduct)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("DELETE")
+                   .SetErrorMessage("Something went wrong while getting the product!")
+                   .Build();
 
 
                 return BadRequest(_response);
@@ -341,6 +544,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
 
+
+            _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(DeleteProduct)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("DELETE")
+                   .Build();
 
             return Ok(_response);
         }
@@ -356,6 +566,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
                 _response.ErrorMessages.Add("The given id is invalid!");
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetCategoryByProduct)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The given id is invalid!")
+                   .Build();
+
                 return BadRequest(_response);
             }
 
@@ -365,6 +584,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("The product with given id is not found!");
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetCategoryByProduct)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The product with given id is not found!")
+                   .Build();
+
                 return NotFound(_response);
             }
 
@@ -373,8 +601,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if(category == null)
             {
                 _response.IsSuccess = false;
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.ErrorMessages.Add("Something went wrong while getting the category");
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetCategoryByProduct)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("Something went wrong while getting the category")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -384,6 +620,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
             _response.data = categoryResponse;
+
+
+            _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetCategoryByProduct)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("GET")
+                   .Build();
 
             return Ok(_response);
         }
@@ -399,6 +643,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The given id is invalid!");
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetSupplierByProduct)}")
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The given id is invalid!")
+                   .Build();
+
                 return BadRequest(_response);   
             }
 
@@ -407,6 +659,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("The product with given id is not found!");
+
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetSupplierByProduct)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The product with given id is not found!")
+                   .Build();
 
                 return NotFound(_response);
             }
@@ -419,6 +680,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("Something went wrong while getting the supplier of the product");
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetSupplierByProduct)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("Something went wrong while getting the supplier of the product")
+                   .Build();
+
                 return BadRequest(_response);
             }
 
@@ -427,6 +697,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
             _response.data = supplierResponse;
+
+
+            _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetSupplierByProduct)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("GET")
+                   .Build();
 
             return Ok(_response);
         }
@@ -442,6 +720,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The given id is invalid!");
 
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetOrdersByProduct)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The given id is invalid!")
+                   .Build();
+
                 return BadRequest(_response);
             }
 
@@ -451,6 +738,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.NotFound;
                 _response.ErrorMessages.Add("The product with given id is not found!");
 
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetOrdersByProduct)}")
+                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("The product with given id is not found!")
+                   .Build();
+
                 return NotFound(_response);
             }
 
@@ -459,8 +754,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if(orders == null)
             {
                 _response.IsSuccess = false;
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.ErrorMessages.Add("Something went wrong while getting the orders of this products!");
+
+
+                _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetOrdersByProduct)}")
+                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
+                   .SetMethodType("GET")
+                   .SetErrorMessage("Something went wrong while getting the orders of this products!")
+                   .Build();
 
                 return BadRequest(_response);
             }
@@ -470,6 +774,14 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
             _response.data = ordersResponse;
+
+
+            _loggingModelBuilder
+                   .SetFailed()
+                   .SetDetails($"{nameof(ProductsController)}/{nameof(GetOrdersByProduct)}")
+                   .SetStatusCode(HttpStatusCode.OK.ToString())
+                   .SetMethodType("GET")
+                   .Build();
 
             return Ok(_response);
         }
