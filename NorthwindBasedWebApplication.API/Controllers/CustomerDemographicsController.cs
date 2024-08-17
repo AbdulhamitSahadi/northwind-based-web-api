@@ -6,7 +6,6 @@ using NorthwindBasedWebApplication.API.Models;
 using NorthwindBasedWebApplication.API.Repositories.IRepository;
 using System.Net;
 using NorthwindBasedWebApplication.API.Models.DTOs.CustomerDTOs;
-using System.Security.Principal;
 
 namespace NorthwindBasedWebApplication.API.Controllers
 {
@@ -51,6 +50,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetMethodType("GET")
                     .Build();
 
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
+
                 return BadRequest(_response);
             }
 
@@ -71,6 +79,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetMethodType("GET")
                     .Build();
 
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
+
                 return NotFound(_response);
             }
 
@@ -82,11 +99,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                     .SetFailed()
-                    .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomerDemographics}")
+                    .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomerDemographics)}")
                     .SetErrorMessage("Something went wrong while getting the customer demographics from the database")
                     .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                     .SetMethodType("GET")
                     .Build();
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -99,10 +125,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             _loggingModelBuilder
                     .SetSuccess()
-                    .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomerDemographics}")
+                    .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomerDemographics)}")
                     .SetStatusCode(HttpStatusCode.OK.ToString())
                     .SetMethodType("GET")
                     .Build();
+
+
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
 
             return Ok(_response);
@@ -123,11 +159,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                     .SetFailed()
-                    .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomerDemographic}")
+                    .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomerDemographic)}")
                     .SetErrorMessage("The model state is invalid!")
                     .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                     .SetMethodType("GET")
                     .Build();
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -141,11 +186,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                     .SetFailed()
-                    .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomerDemographic}")
+                    .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomerDemographic)}")
                     .SetErrorMessage("The given id is invalid")
                     .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                     .SetMethodType("GET")
                     .Build();
+
+
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -159,11 +214,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                     .SetFailed()
-                    .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomerDemographic}")
+                    .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomerDemographic)}")
                     .SetErrorMessage("The given id is not found!")
                     .SetStatusCode(HttpStatusCode.NotFound.ToString())
                     .SetMethodType("GET")
                     .Build();
+
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return NotFound(_response);
             }
@@ -179,11 +243,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                     .SetFailed()
-                    .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomerDemographic}")
+                    .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomerDemographic)}")
                     .SetErrorMessage("Something went wrong while getting the customer demographic from the database!")
                     .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                     .SetMethodType("GET")
                     .Build();
+
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -196,10 +270,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             _loggingModelBuilder
                     .SetSuccess()
-                    .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomerDemographic}")
+                    .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomerDemographic)}")
                     .SetStatusCode(HttpStatusCode.OK.ToString())
                     .SetMethodType("GET")
                     .Build();
+
+
+            _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
             return Ok(_response);
         }
@@ -208,7 +292,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
         
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Create(CreateCustomerDemographicDto createCustomerDemographicDto)
+        public async Task<ActionResult<ApiResponse>> CreateCustomerDemographic(CreateCustomerDemographicDto createCustomerDemographicDto)
         {
 
             if (!ModelState.IsValid)
@@ -220,12 +304,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                     .SetFailed()
-                    .SetDetails($"{nameof(CustomerDemographicsController)}/{Create}")
+                    .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(CreateCustomerDemographic)}")
                     .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                     .SetMethodType("POST")
                     .SetErrorMessage("The model states is invalid!")
                     .Build();
 
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -239,11 +332,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                     .SetFailed()
-                    .SetDetails($"{nameof(CustomerDemographicsController)}/{Create}")
+                    .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(CreateCustomerDemographic)}")
                     .SetStatusCode(HttpStatusCode.NoContent.ToString())
                     .SetMethodType("POST")
                     .SetErrorMessage("The content that send by user is empty")
                     .Build();
+
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -256,11 +358,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                     .SetFailed()
-                    .SetDetails($"{nameof(CustomerDemographicsController)}/{Create}")
+                    .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(CreateCustomerDemographic)}")
                     .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                     .SetMethodType("POST")
                     .SetErrorMessage("The customer's description is exists, please choose another!")
                     .Build();
+
+
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
 
                 return BadRequest(_response);
@@ -280,12 +392,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                     .SetFailed()
-                    .SetDetails($"{nameof(CustomerDemographicsController)}/{Create}")
+                    .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(CreateCustomerDemographic)}")
                     .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                     .SetMethodType("POST")
-                    .SetErrorMessage("Something went wrong while create customer demeographic.!")
+                    .SetErrorMessage("Something went wrong while create customer demographic.!")
                     .Build();
 
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -296,10 +416,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             _loggingModelBuilder
                     .SetSuccess()
-                    .SetDetails($"{nameof(CustomerDemographicsController)}/{Create}")
+                    .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(CreateCustomerDemographic)}")
                     .SetStatusCode(HttpStatusCode.OK.ToString())
                     .SetMethodType("POST")
                     .Build();
+
+
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
 
             return Ok(_response);
@@ -308,7 +438,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<ApiResponse>> UpdateCustomerDemographic(int id, UpdateCustomerDemographicDto updateCustomerDemegraphicDto)
+        public async Task<ActionResult<ApiResponse>> UpdateCustomerDemographic(int id, UpdateCustomerDemographicDto updateCustomerDemographicDto)
         {
             if (!ModelState.IsValid)
             {
@@ -318,16 +448,26 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{UpdateCustomerDemographic}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(UpdateCustomerDemographic)}")
                         .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                         .SetMethodType("PUT")
                         .SetErrorMessage("The model state is invalid!")
                         .Build();
 
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
+
                 return BadRequest(_response);
             }
 
-            if (id <= 0 || updateCustomerDemegraphicDto.Id <= 0)
+            if (id <= 0 || updateCustomerDemographicDto.Id <= 0)
             {
 
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -337,18 +477,28 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{UpdateCustomerDemographic}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(UpdateCustomerDemographic)}")
                         .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                         .SetMethodType("PUT")
                         .SetErrorMessage("The given id is invalid!")
                         .Build();
 
 
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
+
+
                 return BadRequest(_response);
 
             }
 
-            if (id != updateCustomerDemegraphicDto.Id)
+            if (id != updateCustomerDemographicDto.Id)
             {
 
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -358,18 +508,26 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{UpdateCustomerDemographic}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(UpdateCustomerDemographic)}")
                         .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                         .SetMethodType("PUT")
                         .SetErrorMessage("No matching with given ids!")
                         .Build();
 
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
 
 
-            if (updateCustomerDemegraphicDto == null)
+            if (updateCustomerDemographicDto == null)
             {
 
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -379,11 +537,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{UpdateCustomerDemographic}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(UpdateCustomerDemographic)}")
                         .SetStatusCode(HttpStatusCode.NoContent.ToString())
                         .SetMethodType("PUT")
                         .SetErrorMessage("The content of given model is empty!")
                         .Build();
+
+
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
 
                 return BadRequest(_response);
@@ -397,17 +565,27 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{UpdateCustomerDemographic}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(UpdateCustomerDemographic)}")
                         .SetStatusCode(HttpStatusCode.NotFound.ToString())
                         .SetMethodType("PUT")
                         .SetErrorMessage("No customer demographic found with the given id!")
                         .Build();
 
 
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
+
+
                 return NotFound(_response);
             }
 
-            var customerDemographicModel = _mapper.Map<CustomerDemographic>(updateCustomerDemegraphicDto);
+            var customerDemographicModel = _mapper.Map<CustomerDemographic>(updateCustomerDemographicDto);
 
 
             var updatedCustomerDemographic = await _customerDemographicRepository.UpdateAsync(customerDemographicModel);
@@ -422,11 +600,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{UpdateCustomerDemographic}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(UpdateCustomerDemographic)}")
                         .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                         .SetMethodType("PUT")
                         .SetErrorMessage("Something went wrong while getting the customer demographic")
                         .Build();
+
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
 
                 return BadRequest(_response);
@@ -443,6 +631,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                         .SetStatusCode(HttpStatusCode.OK.ToString())
                         .SetMethodType("PUT")
                         .Build();
+
+
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
             return Ok(_response);
         }
@@ -462,11 +660,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{DeleteCustomerDemographic}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(DeleteCustomerDemographic)}")
                         .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                         .SetMethodType("DELETE")
                         .SetErrorMessage("The model state is invalid!")
                         .Build();
+
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -481,11 +689,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{DeleteCustomerDemographic}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(DeleteCustomerDemographic)}")
                         .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                         .SetMethodType("DELETE")
                         .SetErrorMessage("The given id is not valid!")
                         .Build();
+
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -500,11 +717,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{DeleteCustomerDemographic}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(DeleteCustomerDemographic)}")
                         .SetStatusCode(HttpStatusCode.NotFound.ToString())
                         .SetMethodType("DELETE")
                         .SetErrorMessage("The customer demographic with given id is not found!")
                         .Build();
+
+
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
 
                 return NotFound(_response);
@@ -522,11 +749,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{DeleteCustomerDemographic}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(DeleteCustomerDemographic)}")
                         .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                         .SetMethodType("DELETE")
                         .SetErrorMessage("Something went wrong while getting the customer demographic")
                         .Build();
+
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
 
                 return BadRequest(_response);
@@ -543,11 +780,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{DeleteCustomerDemographic}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(DeleteCustomerDemographic)}")
                         .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                         .SetMethodType("DELETE")
                         .SetErrorMessage("Something went wrong while deleting the customer demographic")
                         .Build();
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
 
                 return BadRequest(_response);
@@ -563,6 +809,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                         .SetStatusCode(HttpStatusCode.OK.ToString())
                         .SetMethodType("DELETE")
                         .Build();
+
+
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
 
             return Ok(_response);
@@ -582,11 +838,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomersByTerritory}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomersByTerritory)}")
                         .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                         .SetMethodType("GET")
                         .SetErrorMessage("The model state is invalid!")
                         .Build();
+
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -600,11 +866,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomersByTerritory}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomersByTerritory)}")
                         .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                         .SetMethodType("GET")
                         .SetErrorMessage("The given id is invalid!")
                         .Build();
+
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -618,11 +893,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomersByTerritory}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomersByTerritory)}")
                         .SetStatusCode(HttpStatusCode.NotFound.ToString())
                         .SetMethodType("GET")
                         .SetErrorMessage("No customer demographic found with given id!")
                         .Build();
+
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return NotFound(_response);
             }
@@ -638,11 +923,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomersByTerritory}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomersByTerritory)}")
                         .SetStatusCode(HttpStatusCode.NotFound.ToString())
                         .SetMethodType("GET")
                         .SetErrorMessage("No record found")
                         .Build();
+
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -656,11 +951,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
                 _loggingModelBuilder
                         .SetFailed()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomersByTerritory}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomersByTerritory)}")
                         .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                         .SetMethodType("GET")
                         .SetErrorMessage("Something went wrong while getting the customers")
                         .Build();
+
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
                 return BadRequest(_response);
             }
@@ -674,10 +979,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             _loggingModelBuilder
                         .SetSuccess()
-                        .SetDetails($"{nameof(CustomerDemographicsController)}/{GetCustomersByTerritory}")
+                        .SetDetails($"{nameof(CustomerDemographicsController)}/{nameof(GetCustomersByTerritory)}")
                         .SetStatusCode(HttpStatusCode.OK.ToString())
                         .SetMethodType("GET")
                         .Build();
+
+
+            _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                    _loggingModelBuilder.Build().Details,
+                    _loggingModelBuilder.Build().StatusCode,
+                    _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().Role,
+                    _loggingModelBuilder.Build().Success,
+                    _loggingModelBuilder.Build().Failed,
+                    _loggingModelBuilder.Build().ErrorMessage);
 
 
             return Ok(_response);
