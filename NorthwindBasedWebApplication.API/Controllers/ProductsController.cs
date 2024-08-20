@@ -9,6 +9,7 @@ using NorthwindBasedWebApplication.API.Models.DTOs.CategoryDTOs;
 using System.IO.Pipelines;
 using NorthwindBasedWebApplication.API.Models.DTOs.SupplierDTOs;
 using NorthwindBasedWebApplication.API.Models.DTOs.OrderDTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NorthwindBasedWebApplication.API.Controllers
 {
@@ -37,6 +38,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetProducts()
         {
 
@@ -128,6 +130,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpGet("{id:int}")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetProduct(int id)
         {
 
@@ -272,6 +275,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> CreateProduct([FromQuery]int categoryId,
             [FromQuery]int supplierId, [FromBody]CreateProductDto createProductDto)
         {
@@ -430,6 +434,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> UpdateProduct(int id, 
             [FromQuery]int categoryId, [FromQuery] int supplierId, UpdateProductDto updateProductDto)
         {
@@ -641,6 +646,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> DeleteProduct(int id)
         {
             if (!ModelState.IsValid)
@@ -818,6 +824,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id}/Category")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetCategoryByProduct(int id)
         {
             if(id <= 0)
@@ -935,6 +942,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id}/Supplier")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> GetSupplierByProduct(int id)
         {
             if(id <= 0)
@@ -1052,6 +1060,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id}/Orders")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> GetOrdersByProduct(int id)
         {
             if(id <= 0)
