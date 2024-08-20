@@ -115,5 +115,10 @@ namespace NorthwindBasedWebApplication.API.Repositories.Base
 
             return entry != null;
         }
+
+        public static void doSomething()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
