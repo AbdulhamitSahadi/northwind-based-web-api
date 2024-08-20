@@ -6,11 +6,13 @@ using NorthwindBasedWebApplication.API.Models;
 using NorthwindBasedWebApplication.API.Repositories.IRepository;
 using System.Net;
 using NorthwindBasedWebApplication.API.Models.DTOs.OrderDTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NorthwindBasedWebApplication.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class ShippersController : ControllerBase
     {
         private readonly IShipperRepository _shipperRepository;
@@ -622,6 +624,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
+  
         public async Task<ActionResult<ApiResponse>> DeleteShipper(int id)
         {
             if (!ModelState.IsValid)
