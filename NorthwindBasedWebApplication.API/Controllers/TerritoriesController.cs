@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Validations;
 using NorthwindBasedWebApplication.API.Models.DTOs.EmployeeDTOs;
 using System.Security.Cryptography;
 using NorthwindBasedWebApplication.API.Models.DTOs.RegionDTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NorthwindBasedWebApplication.API.Controllers
 {
@@ -37,6 +38,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetTerritories()
         {
 
@@ -124,6 +126,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id}")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetTerritory(int id)
         {
 
@@ -266,6 +269,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> CreateTerritory(
             [FromQuery] int regionId, [FromBody] CreateTerritoryDto createTerritoryDto)
         {
@@ -418,6 +422,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> UpdateTerritory(int id,
             [FromQuery] int regionId, [FromBody] UpdateTerritoryDto updateTerritoryDto)
         {
@@ -631,6 +636,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> DeleteTerritory(int id)
         {
             if (!ModelState.IsValid)
@@ -802,6 +808,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id}/Employees")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> GetEmployeesByTerritory(int id)
         {
             if(id <= 0)
@@ -936,6 +943,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id:int}/Region")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetRegionByTerritory(int id)
         {
             if(id <= 0)
