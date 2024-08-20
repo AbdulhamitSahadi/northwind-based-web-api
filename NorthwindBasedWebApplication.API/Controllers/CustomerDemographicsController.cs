@@ -6,6 +6,7 @@ using NorthwindBasedWebApplication.API.Models;
 using NorthwindBasedWebApplication.API.Repositories.IRepository;
 using System.Net;
 using NorthwindBasedWebApplication.API.Models.DTOs.CustomerDTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NorthwindBasedWebApplication.API.Controllers
 {
@@ -33,6 +34,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetCustomerDemographics()
         {
 
@@ -147,6 +149,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id}")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetCustomerDemographic(int id)
         {
 
@@ -292,6 +295,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
         
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> CreateCustomerDemographic(CreateCustomerDemographicDto createCustomerDemographicDto)
         {
 
@@ -438,6 +442,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> UpdateCustomerDemographic(int id, UpdateCustomerDemographicDto updateCustomerDemographicDto)
         {
             if (!ModelState.IsValid)
@@ -649,6 +654,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> DeleteCustomerDemographic(int id)
         {
             if (!ModelState.IsValid)
@@ -827,6 +833,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id:int}/Customers")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> GetCustomersByTerritory(int id)
         {
             if (!ModelState.IsValid)
