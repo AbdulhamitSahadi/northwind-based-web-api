@@ -78,6 +78,9 @@
         }
 
 
+        //kayıt sayısı
+
+
         public LoggingModel Build()
         {
             return _logModel;
