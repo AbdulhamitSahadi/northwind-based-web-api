@@ -7,6 +7,7 @@ using NorthwindBasedWebApplication.API.Models;
 using NorthwindBasedWebApplication.API.Repositories.IRepository;
 using System.Net;
 using NorthwindBasedWebApplication.API.Models.DTOs.TerritoryDTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NorthwindBasedWebApplication.API.Controllers
 {
@@ -35,6 +36,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetRegions()
         {
 
@@ -123,6 +125,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id}")]
+        [Authorize("Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetRegion(int id)
         {
 
@@ -266,6 +269,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> CreateRegion([FromBody]CreateRegionDto model)
         {
 
@@ -415,6 +419,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> UpdateRegion(int id, 
             [FromBody]UpdateRegionDto updateRegionDto)
         {
@@ -624,6 +629,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> DeleteRegion(int id)
         {
             if (!ModelState.IsValid)
@@ -798,6 +804,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id}/Territories")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetTerritoriesByRegion(int id)
         {
             if (id <= 0)
