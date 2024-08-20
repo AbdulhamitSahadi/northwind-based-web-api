@@ -1,12 +1,16 @@
-﻿using NorthwindBasedWebApplication.API.Models.DTOs.AuthDTOs;
-using NorthwindBasedWebApplication.API.Models.DTOs.UserDTOs;
+﻿using NorthwindBasedWebApplication.API.Models;
 
 namespace NorthwindBasedWebApplication.API.Repositories.IRepository
 {
     public interface IUserRepository
     {
-        Task<bool> IsUniqueUser(UserDto user);
-        Task<RegisterResponseDto> Register(RegisterRequestDto registerRequestDto);
-        Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto);
+        Task<bool> CreateAsync(ApplicationUser user);
+        Task<bool> DeleteAsync(int id);
+        Task<IReadOnlyList<ApplicationUser>> GetAllAsync();
+        Task<ApplicationUser> GetByIdAsync(int id);
+        Task<bool> IsExistsAsync(int id);
+        Task<bool> IsExistsAsync(string email);
+        Task<bool> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword);
+        Task<bool> UpdateAsync(ApplicationUser user);
     }
 }
