@@ -6,6 +6,7 @@ using NorthwindBasedWebApplication.API.Models.DTOs.OrderDTOs;
 using NorthwindBasedWebApplication.API.Models;
 using NorthwindBasedWebApplication.API.Repositories.IRepository;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NorthwindBasedWebApplication.API.Controllers
 {
@@ -33,6 +34,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> GetOrders()
         {
 
@@ -122,6 +124,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> GetOrder(int id)
         {
 
@@ -267,6 +270,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<ActionResult<ApiResponse>> CreateOrder([FromQuery]int employeeId,
             [FromQuery]int shipVia, [FromQuery]int customerId, 
             [FromBody]CreateOrderDto createOrderDto)
@@ -395,6 +399,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> UpdateOrder(int id,
             [FromQuery]int employeeId, [FromQuery]int shipVia,
             [FromQuery]int customerId, [FromBody]UpdateOrderDto updateOrderDto)
@@ -608,6 +613,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> DeleteOrder(int id)
         {
             if (!ModelState.IsValid)
