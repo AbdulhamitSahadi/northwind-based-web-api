@@ -7,6 +7,8 @@ using NorthwindBasedWebApplication.API.Models.Common;
 using AutoMapper;
 using NorthwindBasedWebApplication.API.Models.DTOs.ProductDTOs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace NorthwindBasedWebApplication.API.Controllers
 {
@@ -15,6 +17,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
     {
+        
 
         private readonly ICategoryRepository _categoryRepository;
         private ApiResponse _response;
@@ -36,6 +39,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Customer")]
+        
         public async Task<ActionResult<ApiResponse>> GetCategories()
         {
 
@@ -44,6 +49,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The model state is invalid!");
                 _response.IsSuccess = false;
+
+                
 
                 _loggingModelBuilder
                     .SetMethodType("GET")
@@ -149,12 +156,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     _loggingModelBuilder.Build().ErrorMessage);
 
 
+            System.Security.Claims.ClaimsPrincipal user = this.User;
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role).ToList();
+
+
+
             return Ok(_response);
         }
 
 
         [HttpGet]
         [Route("{id:int}")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetCategory(int id)
         {
 
@@ -292,6 +305,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> CreateCategory(CreateCategoryDto createCategoryDto)
         {
 
@@ -438,6 +452,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> UpdateCategory(int id, UpdateCategoryDto updateCategoryDto)
         {
             if (!ModelState.IsValid)
@@ -651,6 +666,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpDelete]
         [Route("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> DeleteCategory(int id)
         {
             if (!ModelState.IsValid)
@@ -827,6 +843,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id}/Products")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetProductsByCategory(int id)
         {
 
