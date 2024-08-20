@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NorthwindBasedWebApplication.API.Models;
 
 namespace NorthwindBasedWebApplication.API.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
     {
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
@@ -117,6 +118,20 @@ namespace NorthwindBasedWebApplication.API.Data
                 .WithOne(r => r.Region)
                 .HasForeignKey(fk => fk.RegionId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+
+            modelBuilder.Entity<ApplicationRole>(b =>
+            {
+                b.HasKey(r => r.Id);
+                b.HasIndex(r => r.NormalizedName).HasDatabaseName("RoleNameIndex").IsUnique();
+                b.ToTable("AspNetRoles");
+                b.Property(r => r.ConcurrencyStamp).IsConcurrencyToken();
+
+                b.Property(u => u.Name).HasMaxLength(256);
+                b.Property(u => u.NormalizedName).HasMaxLength(256);
+
+            });
         }
     }
 }
