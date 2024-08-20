@@ -12,6 +12,8 @@ using NorthwindBasedWebApplication.API.Models.DTOs.SupplierDTOs;
 using NorthwindBasedWebApplication.API.Models.DTOs.TerritoryDTOs;
 using NorthwindBasedWebApplication.API.Models.DTOs.UserDTOs;
 using NorthwindBasedWebApplication.API.Models;
+using NorthwindBasedWebApplication.API.Models.Common;
+using Serilog;
 
 namespace NorthwindBasedWebApplication.API.Common.Profiles
 {
@@ -75,6 +77,9 @@ namespace NorthwindBasedWebApplication.API.Common.Profiles
 
 
             CreateMap<ApplicationUser, UserDto>().ReverseMap();
+
+
+            CreateMap<RoleDto, ApplicationRole>().ReverseMap();
         }
     }
 }
