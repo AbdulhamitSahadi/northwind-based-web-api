@@ -6,7 +6,6 @@ using System.Net;
 using NorthwindBasedWebApplication.API.Models.Common;
 using AutoMapper;
 using NorthwindBasedWebApplication.API.Models.DTOs.ProductDTOs;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
@@ -44,6 +43,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
         public async Task<ActionResult<ApiResponse>> GetCategories()
         {
 
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();
+            ClaimsPrincipal user = this.User;
+
             if (!ModelState.IsValid)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -58,13 +60,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetFailed()
                     .SetErrorMessage("Model State is invalid!")
                     .SetStatusCode(HttpStatusCode.BadRequest.ToString())
-                    .SetRole("Customer")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -87,13 +91,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(GetCategories)}")
                     .SetErrorMessage("Not category found!")
                     .SetStatusCode(HttpStatusCode.NotFound.ToString())
-                    .SetRole("Customer")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
-                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -116,13 +122,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(GetCategories)}")
                     .SetErrorMessage("Something went wrong while getting categories!")
                     .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
-                    .SetRole("Customer")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -143,21 +151,22 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 .SetSuccess()
                 .SetDetails($"{nameof(CategoriesController)}/{nameof(GetCategories)}")
                 .SetStatusCode(HttpStatusCode.OK.ToString())
-                .SetRole("Customer")
+                .SetRole(roleClaims.First().Value.ToString())
+                .SetUser(user.Identity.Name.ToString())
                 .Build();
 
-            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
                     _loggingModelBuilder.Build().ErrorMessage);
 
 
-            System.Security.Claims.ClaimsPrincipal user = this.User;
-            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role).ToList();
+            
 
 
 
@@ -170,6 +179,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
         [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetCategory(int id)
         {
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();
+
+            ClaimsPrincipal user = this.User;
 
             if (!ModelState.IsValid)
             {
@@ -183,13 +195,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(GetCategory)}")
                     .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                     .SetErrorMessage("The model state is invalid!")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -204,10 +219,22 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The given id is invalid");
                 _response.IsSuccess = false;
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+
+                _loggingModelBuilder
+                    .SetMethodType("GET")
+                    .SetFailed()
+                    .SetDetails($"{nameof(CategoriesController)}/{nameof(GetCategory)}")
+                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                    .SetErrorMessage("The given id is invalid!")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
+                    .Build();
+
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -230,26 +257,29 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(GetCategory)}")
                     .SetStatusCode(HttpStatusCode.NotFound.ToString())
                     .SetErrorMessage("The customer with given id is not found")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
-                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
                     _loggingModelBuilder.Build().ErrorMessage);
 
 
-                return NotFound(_response);
+                return BadRequest(_response);
             }
 
             var category = await _categoryRepository.GetAsync(i => i.Id == id, tracked: false);
 
             if (category == null)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.ErrorMessages.Add("En error exists while getting the category!");
                 _response.IsSuccess = false;
 
@@ -259,13 +289,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(GetCategory)}")
                     .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                     .SetErrorMessage("En error exists while getting the category!")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -286,6 +319,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 .SetDetails($"{nameof(CategoriesController)}/{nameof(GetCategory)}")
                 .SetMethodType("GET")
                 .SetStatusCode(HttpStatusCode.OK.ToString())
+                .SetRole(roleClaims.First().Value.ToString())
+                .SetUser(user.Identity.Name.ToString())
                 .Build();
 
 
@@ -308,6 +343,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> CreateCategory(CreateCategoryDto createCategoryDto)
         {
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();
+            ClaimsPrincipal user = this.User;
 
             if (!ModelState.IsValid)
             {
@@ -321,13 +358,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(CreateCategory)}")
                     .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                     .SetErrorMessage("The model states are not valid!")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -341,20 +381,23 @@ namespace NorthwindBasedWebApplication.API.Controllers
             {
                 _response.IsSuccess = false;
                 _response.ErrorMessages.Add("No content exists while sent the create data for category!");
-                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.StatusCode = HttpStatusCode.BadRequest;
 
                 _loggingModelBuilder
-                    .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(CreateCategory)}")
                     .SetFailed()
                     .SetErrorMessage("No content exists while sent the create data for category!")
                     .SetMethodType("POST")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
-                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -365,7 +408,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             if (await _categoryRepository.IsExistAsync(cn => cn.CategoryName.Trim() == createCategoryDto.CategoryName.Trim()))
             {
-                _response.ErrorMessages.Add("The name of category is exists, please choose another name");
+                _response.ErrorMessages.Add("The name of category is exists, please choose another name!");
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
 
@@ -376,12 +419,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(CreateCategory)}")
                     .SetMethodType("POST")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
-                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -400,22 +446,25 @@ namespace NorthwindBasedWebApplication.API.Controllers
             {
                 _response.IsSuccess = false;
                 _response.ErrorMessages.Add("Something went wrong while creating the category");
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
 
 
                 _loggingModelBuilder
                     .SetErrorMessage("Something went wrong while creating the category!")
-                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                    .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(CreateCategory)}")
                     .SetFailed()
                     .SetMethodType("POST")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -434,13 +483,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 .SetDetails($"{nameof(CategoriesController)}/{nameof(CreateCategory)}")
                 .SetMethodType("POST")
                 .SetSuccess()
+                .SetRole(roleClaims.First().Value.ToString())
+                .SetUser(user.Identity.Name.ToString())
                 .Build();
 
 
-            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -455,6 +507,10 @@ namespace NorthwindBasedWebApplication.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> UpdateCategory(int id, UpdateCategoryDto updateCategoryDto)
         {
+
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();
+            ClaimsPrincipal user = this.User;
+
             if (!ModelState.IsValid)
             {
                 _response.ErrorMessages.Add("The model states are not valid!");
@@ -468,12 +524,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetFailed()
                     .SetErrorMessage("The model states are not valid!")
                     .SetMethodType("PUT")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -497,13 +556,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetMethodType("PUT")
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(UpdateCategory)}")
                     .SetStatusCode(HttpStatusCode.BadRequest.ToString())
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
 
-                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -528,13 +590,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetFailed()
                     .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(UpdateCategory)}")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
 
-                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -549,22 +614,25 @@ namespace NorthwindBasedWebApplication.API.Controllers
             {
 
                 _response.ErrorMessages.Add("The data of category to update is empty!");
-                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
 
                 _loggingModelBuilder
                     .SetFailed()
                     .SetErrorMessage("The data of category to update is empty!")
-                    .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(UpdateCategory)}")
                     .SetMethodType("PUT")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
 
-                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -586,13 +654,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetErrorMessage("The category with given id is not found!")
                     .SetStatusCode(HttpStatusCode.NotFound.ToString())
                     .SetMethodType("PUT")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
 
-                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -621,13 +692,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetErrorMessage("Something went wrong while updating the category!")
                     .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                     .SetMethodType("PUT")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -647,13 +721,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(UpdateCategory)}")
                     .SetStatusCode(HttpStatusCode.OK.ToString())
                     .SetMethodType("PUT")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
 
-            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -669,6 +746,10 @@ namespace NorthwindBasedWebApplication.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse>> DeleteCategory(int id)
         {
+
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();
+            ClaimsPrincipal user = this.User;
+
             if (!ModelState.IsValid)
             {
                 _response.ErrorMessages.Add("The model states are not valid!");
@@ -676,18 +757,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.IsSuccess = false;
 
                 _loggingModelBuilder
-                    .SetSuccess()
+                    .SetFailed()
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(DeleteCategory)}")
                     .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                     .SetMethodType("DELETE")
                     .SetErrorMessage("The model states are not valid!")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -704,18 +788,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The given id is not valid!");
 
                 _loggingModelBuilder
-                    .SetSuccess()
+                    .SetFailed()
                     .SetDetails($"{nameof(CategoriesController)}/{nameof(DeleteCategory)}")
                     .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                     .SetMethodType("DELETE")
                     .SetErrorMessage("The given is is not valid!")
+                    .SetRole(roleClaims.First().Value.ToString())
+                    .SetUser(user.Identity.Name.ToString())
                     .Build();
 
 
-                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -732,18 +819,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("The category with given id not found");
 
                 _loggingModelBuilder
-                   .SetSuccess()
+                   .SetFailed()
                    .SetDetails($"{nameof(CategoriesController)}/{nameof(DeleteCategory)}")
                    .SetStatusCode(HttpStatusCode.NotFound.ToString())
                    .SetMethodType("DELETE")
                    .SetErrorMessage("The category with given id is not found!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -762,18 +852,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _response.ErrorMessages.Add("Something went wrong accessing the wanted category model");
 
                 _loggingModelBuilder
-                   .SetSuccess()
+                   .SetFailed()
                    .SetDetails($"{nameof(CategoriesController)}/{nameof(DeleteCategory)}")
                    .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                    .SetMethodType("DELETE")
                    .SetErrorMessage("Something went wrong accessing the wanted category model!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -793,18 +886,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
                 _loggingModelBuilder
-                   .SetSuccess()
+                   .SetFailed()
                    .SetDetails($"{nameof(CategoriesController)}/{nameof(DeleteCategory)}")
                    .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                    .SetMethodType("DELETE")
                    .SetErrorMessage("Something went wrong while deleting the category")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -823,13 +919,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetDetails($"{nameof(CategoriesController)}/{nameof(DeleteCategory)}")
                    .SetStatusCode(HttpStatusCode.OK.ToString())
                    .SetMethodType("DELETE")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -846,8 +945,10 @@ namespace NorthwindBasedWebApplication.API.Controllers
         [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetProductsByCategory(int id)
         {
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();
+            ClaimsPrincipal user = this.User;
 
-            if(id <= 0)
+            if (id <= 0)
             {
                 _response.ErrorMessages.Add("The given id is not valid!");
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -855,18 +956,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
                 _loggingModelBuilder
-                   .SetSuccess()
+                   .SetFailed()
                    .SetDetails($"{nameof(CategoriesController)}/{nameof(GetProductsByCategory)}")
                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                    .SetMethodType("GET")
                    .SetErrorMessage("The given id is not valid!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -883,24 +987,27 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
                 _loggingModelBuilder
-                   .SetSuccess()
+                   .SetFailed()
                    .SetDetails($"{nameof(CategoriesController)}/{nameof(GetProductsByCategory)}")
                    .SetStatusCode(HttpStatusCode.NotFound.ToString())
                    .SetMethodType("GET")
                    .SetErrorMessage("The category with given id is not found!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogWarning("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
                     _loggingModelBuilder.Build().ErrorMessage);
 
-                return NotFound(_response);
+                return BadRequest(_response);
             }
 
 
@@ -914,18 +1021,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
                 _loggingModelBuilder
-                   .SetSuccess()
+                   .SetFailed()
                    .SetDetails($"{nameof(CategoriesController)}/{nameof(GetProductsByCategory)}")
                    .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                    .SetMethodType("GET")
                    .SetErrorMessage("Something went wrong while getting the products!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -937,7 +1047,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
             var productsResponse = _mapper.Map<List<ReadProductDto>>(products);
 
             _response.StatusCode = HttpStatusCode.OK;
-            _response.IsSuccess = false;
+            _response.IsSuccess = true;
             _response.data = productsResponse;
 
 
@@ -947,20 +1057,23 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetDetails($"{nameof(CategoriesController)}/{nameof(GetProductsByCategory)}")
                    .SetStatusCode(HttpStatusCode.OK.ToString())
                    .SetMethodType("GET")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
 
-            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
                     _loggingModelBuilder.Build().ErrorMessage);
 
-            return NotFound(_response);
+            return Ok(_response);
         }
     }
 }
