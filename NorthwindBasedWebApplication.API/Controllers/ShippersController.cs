@@ -7,6 +7,7 @@ using NorthwindBasedWebApplication.API.Repositories.IRepository;
 using System.Net;
 using NorthwindBasedWebApplication.API.Models.DTOs.OrderDTOs;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace NorthwindBasedWebApplication.API.Controllers
 {
@@ -37,6 +38,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
         [HttpGet]
         public async Task<ActionResult<ApiResponse>> GetShippers()
         {
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();
+            ClaimsPrincipal user = this.User;
 
             if (!ModelState.IsValid)
             {
@@ -50,13 +53,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                    .SetMethodType("GET")
                    .SetErrorMessage("The model state is invalid!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -79,12 +85,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                    .SetMethodType("GET")
                    .SetErrorMessage("Something went wrong while getting the shippers!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -104,13 +113,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetDetails($"{nameof(ShippersController)}/{nameof(GetShippers)}")
                    .SetStatusCode(HttpStatusCode.OK.ToString())
                    .SetMethodType("GET")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -126,6 +138,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
         public async Task<ActionResult<ApiResponse>> GetShipper(int id)
         {
 
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();
+            ClaimsPrincipal user = this.User;
+
             if (!ModelState.IsValid)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -138,13 +153,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                    .SetMethodType("GET")
                    .SetErrorMessage("The model state is invalid!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -166,13 +184,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                    .SetMethodType("GET")
                    .SetErrorMessage("The given id is invalid")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -193,19 +214,22 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.NotFound.ToString())
                    .SetMethodType("GET")
                    .SetErrorMessage("No shipper found with given id!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
                     _loggingModelBuilder.Build().ErrorMessage);
 
-                return BadRequest(_response);
+                return NotFound(_response);
             }
 
             var shipperModel = await _shipperRepository.GetAsync(i => i.Id == id, tracked: false);
@@ -223,13 +247,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                    .SetMethodType("GET")
                    .SetErrorMessage("Something went wrong while getting the shipper!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -251,13 +278,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetDetails($"{nameof(ShippersController)}/{nameof(GetShipper)}")
                    .SetStatusCode(HttpStatusCode.OK.ToString())
                    .SetMethodType("GET")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -272,6 +302,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ApiResponse>> CreateShipper([FromBody]CreateShipperDto createShipperDto)
         {
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();
+            ClaimsPrincipal user = this.User;
 
             if (!ModelState.IsValid)
             {
@@ -285,13 +317,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                    .SetMethodType("POST")
                    .SetErrorMessage("The model state is invalid!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -303,23 +338,26 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
             if (createShipperDto == null)
             {
-                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The content that send by user is empty!");
                 _response.IsSuccess = false;
 
                 _loggingModelBuilder
                    .SetFailed()
                    .SetDetails($"{nameof(ShippersController)}/{nameof(CreateShipper)}")
-                   .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                    .SetMethodType("POST")
                    .SetErrorMessage("The content that send by user is empty!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -340,13 +378,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.NoContent.ToString())
                    .SetMethodType("POST")
                    .SetErrorMessage("The shipper's phone is exists, please choose another!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -374,12 +415,15 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                    .SetMethodType("POST")
                    .SetErrorMessage("Something went wrong while creating the shipper!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -398,13 +442,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetDetails($"{nameof(ShippersController)}/{nameof(CreateShipper)}")
                    .SetStatusCode(HttpStatusCode.OK.ToString())
                    .SetMethodType("POST")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -419,6 +466,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
         public async Task<ActionResult<ApiResponse>> UpdateShipper(int id, 
             [FromBody]UpdateShipperDto updateShipperDto)
         {
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();
+            ClaimsPrincipal user = this.User;
+
             if (!ModelState.IsValid)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -432,13 +482,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                    .SetMethodType("PUT")
                    .SetErrorMessage("The model state is invalid!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -462,13 +515,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                    .SetMethodType("PUT")
                    .SetErrorMessage("The given id is invalid!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -492,13 +548,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                    .SetMethodType("PUT")
                    .SetErrorMessage("No matching with given ids")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -511,7 +570,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
             if (updateShipperDto == null)
             {
 
-                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessages.Add("The content of give model is empty");
                 _response.IsSuccess = false;
 
@@ -519,15 +578,18 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 _loggingModelBuilder
                    .SetFailed()
                    .SetDetails($"{nameof(ShippersController)}/{nameof(UpdateShipper)}")
-                   .SetStatusCode(HttpStatusCode.NoContent.ToString())
+                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                    .SetMethodType("PUT")
                    .SetErrorMessage("The content of give model is empty")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
-                    _loggingModelBuilder.Build().Details,
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                   _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -548,18 +610,21 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.NotFound.ToString())
                    .SetMethodType("PUT")
                    .SetErrorMessage("No shipper found with the given Id")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
                     _loggingModelBuilder.Build().ErrorMessage);
 
-                return BadRequest(_response);
+                return NotFound(_response);
             }
 
             var shipperModel = _mapper.Map<Shipper>(updateShipperDto);
@@ -581,13 +646,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                    .SetMethodType("PUT")
                    .SetErrorMessage("Something went wrong while updating the shipper!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -601,17 +669,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
 
             _loggingModelBuilder
-                   .SetFailed()
+                   .SetSuccess()
                    .SetDetails($"{nameof(ShippersController)}/{nameof(UpdateShipper)}")
                    .SetStatusCode(HttpStatusCode.OK.ToString())
                    .SetMethodType("PUT")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -627,6 +698,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
   
         public async Task<ActionResult<ApiResponse>> DeleteShipper(int id)
         {
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();
+            ClaimsPrincipal user = this.User;
+
             if (!ModelState.IsValid)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -639,13 +713,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                    .SetMethodType("DELETE")
                    .SetErrorMessage("The model state is invalid!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -667,13 +744,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                    .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                    .SetMethodType("DELETE")
                    .SetErrorMessage("The given id is not valid!")
+                   .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                    .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -695,13 +775,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
                   .SetMethodType("DELETE")
                   .SetErrorMessage("The shipper with given id is not found!")
+                  .SetRole(roleClaims.First().Value.ToString())
+                  .SetUser(user.Identity.Name.ToString())
                   .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -726,13 +809,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                   .SetMethodType("DELETE")
                   .SetErrorMessage("Something went wrong while getting the shipper!")
+                  .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                   .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -757,14 +843,17 @@ namespace NorthwindBasedWebApplication.API.Controllers
                   .SetDetails($"{nameof(ShippersController)}/{nameof(DeleteShipper)}")
                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                   .SetMethodType("DELETE")
+                  .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                   .SetErrorMessage("Something went wrong while deleting the shipper!")
                   .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -773,8 +862,8 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            _response.StatusCode = HttpStatusCode.BadRequest;
-            _response.IsSuccess = false;
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
 
 
             _loggingModelBuilder
@@ -782,13 +871,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                   .SetDetails($"{nameof(ShippersController)}/{nameof(DeleteShipper)}")
                   .SetStatusCode(HttpStatusCode.OK.ToString())
                   .SetMethodType("DELETE")
+                  .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                   .Build();
 
 
-            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -802,6 +894,9 @@ namespace NorthwindBasedWebApplication.API.Controllers
         [Route("{id}/Orders")]
         public async Task<ActionResult<ApiResponse>> GetOrdersByShipper(int id)
         {
+            List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();
+            ClaimsPrincipal user = this.User;
+
             if (!ModelState.IsValid)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -815,13 +910,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                   .SetMethodType("GET")
                   .SetErrorMessage("The model state is invalid!")
+                  .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                   .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -844,13 +942,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                   .SetStatusCode(HttpStatusCode.BadRequest.ToString())
                   .SetMethodType("GET")
                   .SetErrorMessage("The given id is not valid!")
+                  .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                   .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -873,13 +974,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                   .SetStatusCode(HttpStatusCode.NotFound.ToString())
                   .SetMethodType("GET")
                   .SetErrorMessage("The shipper with given id is not found!")
+                  .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                   .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -904,13 +1008,16 @@ namespace NorthwindBasedWebApplication.API.Controllers
                   .SetStatusCode(HttpStatusCode.InternalServerError.ToString())
                   .SetMethodType("GET")
                   .SetErrorMessage("Something went wrong wile getting the orders of the shipper")
+                  .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                   .Build();
 
 
-                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+                _logger.LogError("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
@@ -927,17 +1034,20 @@ namespace NorthwindBasedWebApplication.API.Controllers
             _response.data = ordersResponse;
 
             _loggingModelBuilder
-                 .SetFailed()
+                 .SetSuccess()
                  .SetDetails($"{nameof(ShippersController)}/{nameof(GetOrdersByShipper)}")
                  .SetStatusCode(HttpStatusCode.OK.ToString())
                  .SetMethodType("GET")
+                 .SetRole(roleClaims.First().Value.ToString())
+                   .SetUser(user.Identity.Name.ToString())
                  .Build();
 
 
-            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{Role}|{Success}{Failed}|{ErrorMessage}",
+            _logger.LogInformation("{Details}|{StatusCode}|{MethodType}|{User}|{Role}|{Success}{Failed}|{ErrorMessage}",
                     _loggingModelBuilder.Build().Details,
                     _loggingModelBuilder.Build().StatusCode,
                     _loggingModelBuilder.Build().MethodType,
+                    _loggingModelBuilder.Build().User,
                     _loggingModelBuilder.Build().Role,
                     _loggingModelBuilder.Build().Success,
                     _loggingModelBuilder.Build().Failed,
