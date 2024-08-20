@@ -8,12 +8,14 @@ using System.Net;
 using NorthwindBasedWebApplication.API.Models.DTOs.CustomerDemographicDTOs;
 using NorthwindBasedWebApplication.API.Models.DTOs.OrderDTOs;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NorthwindBasedWebApplication.API.Controllers
 {
 
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class CustomersController : ControllerBase
     {
         private readonly ICustomerRepository _customerRepository;
