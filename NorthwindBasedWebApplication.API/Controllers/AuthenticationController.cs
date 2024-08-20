@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using NorthwindBasedWebApplication.API.Models;
 using NorthwindBasedWebApplication.API.Models.Common;
 using NorthwindBasedWebApplication.API.Models.DTOs.AuthDTOs;
 using NorthwindBasedWebApplication.API.Repositories.IRepository;
@@ -12,32 +14,38 @@ namespace NorthwindBasedWebApplication.API.Controllers
     [Route("api/[controller]")]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IAuthenticationRepository _authenticationUserRepository;
         private readonly ApiResponse _response;
         private readonly ILogger<AuthenticationController> _logger;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthenticationController(IUserRepository userRepository, ILogger<AuthenticationController> logger)
+        public AuthenticationController(IAuthenticationRepository authenticationUserRepository, ILogger<AuthenticationController> logger,
+            UserManager<ApplicationUser> userManager)
         {
-            _userRepository = userRepository;
+            _authenticationUserRepository = authenticationUserRepository;
             _response = new();
             _logger = logger;
+            _userManager = userManager;
         }
 
 
         [HttpPost]
         [Route("Login")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResponse>> Login([FromBody] LoginRequestDto loginRequestDto)
         {
             if(loginRequestDto == null)
             {
                 _response.ErrorMessages.Add("No content sent it!");
-                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
+
+                
 
                 return BadRequest(_response);
             }
 
-            var loginUser = await _userRepository.Login(loginRequestDto);
+            var loginUser = await _authenticationUserRepository.Login(loginRequestDto);
 
             if(loginUser == null)
             {
@@ -68,6 +76,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpPost]
         [Route("Register")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResponse>> Register([FromBody] RegisterRequestDto registerRequestDto)
         {
             if(registerRequestDto == null)
@@ -79,7 +88,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
                 return BadRequest(_response);
             }
 
-            if (!await _userRepository.IsUniqueUser(registerRequestDto.user))
+            if (!await _authenticationUserRepository.IsUniqueUser(registerRequestDto.user))
             {
                 _response.ErrorMessages.Add("The user is not unique!");
                 _response.IsSuccess = false;
@@ -89,7 +98,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
             }
 
 
-            var registeredUser = await _userRepository.Register(registerRequestDto);
+            var registeredUser = await _authenticationUserRepository.Register(registerRequestDto);
 
 
             if(registeredUser == null)
