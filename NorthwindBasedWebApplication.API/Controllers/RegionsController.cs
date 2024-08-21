@@ -137,7 +137,7 @@ namespace NorthwindBasedWebApplication.API.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        [Authorize("Admin,Customer")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ApiResponse>> GetRegion(int id)
         {
             List<Claim> roleClaims = HttpContext.User.FindAll(ClaimTypes.Role.ToString()).ToList();

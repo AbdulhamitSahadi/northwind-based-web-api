@@ -21,14 +21,13 @@ namespace NorthwindBasedWebApplication.API.Controllers
         private readonly ILogger<OrdersController> _logger;
         private readonly LoggingModelBuilder _loggingModelBuilder;
 
-        public OrdersController(IOrderRepository orderRepository, IMapper mapper, ILogger<OrdersController> logger,
-            LoggingModelBuilder loggingModelBuilder)
+        public OrdersController(IOrderRepository orderRepository, IMapper mapper, ILogger<OrdersController> logger)
         {
             _orderRepository = orderRepository;
             _response = new();
             _mapper = mapper;
             _logger = logger;
-            _loggingModelBuilder = loggingModelBuilder;
+            _loggingModelBuilder = new();
         }
 
 
